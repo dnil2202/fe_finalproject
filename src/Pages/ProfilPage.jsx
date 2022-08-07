@@ -10,7 +10,10 @@ import { Avatar, Box, Button, Container,Text, Image, Stack,
     MenuButton,
     MenuList,
     MenuItem,
-    Menu
+    Menu,
+    useToast,
+    Editable,
+    Textarea
 } from '@chakra-ui/react'
 import React, {useState} from 'react'
 import Navbar from '../component/Navbar'
@@ -25,8 +28,13 @@ import { AiOutlineMenu } from 'react-icons/ai'
 
 const ProfilPage = () => {
     const [toggle, setToggle]=useState(false)
+    const[toggleEdit,setToggleEdit]=useState(false)
     const [postDetail, setPostDetail] = useState([])
+    const[updateCaption, SetUpdateCaption]=useState('')
     const navigate=useNavigate()
+    const toast = useToast()
+
+    console.log('update', updateCaption)
 
     const{username, posting}= useSelector((state)=>{
         return {
@@ -35,31 +43,66 @@ const ProfilPage = () => {
         }
     })
 
-    console.log(posting)
+    console.log('idposting:',postDetail.idposting)
 
     const openModalDetail=(toggle, val)=>{
         setPostDetail(val)
         setToggle(!toggle)
     }
-  
-//     const getData =()=>{
-//       axios.get(API_URL+'/user')
-//       .then((res)=>{
-//         setDataPosting(res.data[0].posting)
-//         setDataUser(res.data)
-//       }).catch((err)=>{
-//         console.log(err)
-//       })
-//     }
-  
-//     React.useEffect(() => {
-//       getData();
-//   }, []);
+
+    const deletePosting = ()=>{
+        axios.delete(API_URL+`/posting/${postDetail.idposting}`)
+        .then((res)=>{
+            toast({
+                title: 'Your posting has deleted',
+                description: `success delete`,
+                status: 'success',
+                duration: 2000,
+                isCloseable: true,
+            })        
+        })
+        .catch((err)=>{
+            toast({
+                title: 'Error Deleted',
+                description: err.message,
+                status: 'error',
+                duration: 2000,
+                isClosable: true,
+            });
+        })
+    }
+
+    const updatePosting =()=>{
+        axios.patch(API_URL+`/posting/${postDetail.idposting}`,{
+            caption:updateCaption
+        })
+        .then((res)=>{
+            if(res.data.success){
+                toast({
+                    title:"Updated Caption",
+                    desctiption: "Updated Caption",
+                    status:"success",
+                    duration:5000,
+                    isClosable:true
+                })
+                setToggleEdit(!toggleEdit)
+            }
+        }).catch((err)=>{
+            toast({
+                title:`${err}`,
+                desctiption: 'eror',
+                status:"warning",
+                duration:3000,
+                isClosable:true
+            })
+        })
+        
+    }
 
   const printData = ()=>{
     return posting.map((val,idx)=>{
         return(
-            <div className='col-4'>
+            <div className='col-4' key={val.id}>
             <Stack direction={'row'}>
                 <Image boxSize={'2xs'} onClick={()=>openModalDetail(toggle, val)}  my={'5'} src={API_URL+val.images}/>
             </Stack>
@@ -106,7 +149,7 @@ const ProfilPage = () => {
                     <ModalBody>
                         <div className='row'>
                             <Box className='col-7'>
-                                <Image src={postDetail.images} boxSize={'xl'}/>
+                                <Image src={API_URL + postDetail.images} boxSize={'xl'}/>
                             </Box>
                             <Box className='col-5' boxShadow={'xl'}>
                                 <div className='row'>
@@ -120,8 +163,8 @@ const ProfilPage = () => {
                                             <AiOutlineMenu/>
                                         </MenuButton>
                                         <MenuList width={'fit-content'}>
-                                            <MenuItem>Edit Caption</MenuItem>
-                                            <MenuItem>Delete</MenuItem>
+                                            <MenuItem onClick={()=>setToggleEdit(!toggleEdit)}>Edit Caption</MenuItem>
+                                            <MenuItem onClick={deletePosting}>Delete</MenuItem>
                                         </MenuList>
                                        </Menu>
                                     </div>
@@ -131,9 +174,17 @@ const ProfilPage = () => {
                                 <div className='mt-2 d-flex'>
                                 <Avatar size={'xs'} me={1}></Avatar>
                                 <Text className='fw-bold'>{username}</Text>
-                                <Text ms={1} textAlign={'justify'}>{postDetail.caption}</Text>
+                                {toggleEdit ?
+                                <div>
+                                    <Textarea onChange={(e)=>SetUpdateCaption(e.target.value)} defaultValue={postDetail.caption} size={''} />
+                                    <Button onClick={updatePosting}>Ok</Button>
+                                    <Button onClick={()=>setToggleEdit(!toggleEdit)}>Cancel</Button>
                                 </div>
-                                <Text className='text-muted' as={'sup'}>{postDetail.add_date.split('').splice(0,10).join('')}</Text>
+                                :
+                                <Text ms={1} textAlign={'justify'}>{postDetail.caption}</Text>
+                                }
+                                </div>
+                                {/* <Text className='text-muted' as={'sup'}>{postDetail.add_date.split('').splice(0,10).join('')}</Text> */}
                             </Box>
                         </div>
                     </ModalBody>
