@@ -41,7 +41,7 @@ const Homepage = () => {
           <div className='d-flex mx-2 my-2'>
           <Avatar size={'sm'}>
           </Avatar>
-          <Text fontFamily={'serif'} fontSize={'md'} ms={'5'}>{val.username}</Text>
+          <Text fontFamily={'serif'} fontSize={'md'} ms={'5'}>{val.user_name_post}</Text>
           </div>
           <img src={API_URL+ val.images} className='card-img-top w-100' style={{height:'300px'}} />
           <div className='card-body'>

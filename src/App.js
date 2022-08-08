@@ -55,7 +55,7 @@ function App() {
         <Route path='/profil' element={<ProfilPage/>}/>
         <Route path='/edit' element={<EditProfil/>}/>
         <Route path='/change' element={<ChangePassword/>}/>
-        <Route path='/verified' element={<VerifiedPage/>}/>
+        <Route path='/verification/:token' element={<VerifiedPage/>}/>
       </Routes>
     </div>
   );
