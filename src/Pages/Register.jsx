@@ -43,8 +43,7 @@ const Register = () => {
                     fullname,
                     username,
                     email,
-                    password,
-                    status:'verified'
+                    password
                 })
                 .then((res)=>{
                     if(res.data.success){

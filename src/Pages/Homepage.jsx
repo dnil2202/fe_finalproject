@@ -9,11 +9,13 @@ import {useSelector} from 'react-redux'
 const Homepage = () => {
   const [dataPosting, setDataPosting]=useState([])
 
-  const {fullname,username} = useSelector((state)=>{
+  const {fullname,username,images} = useSelector((state)=>{
     console.log(state)
     return{
       fullname : state.userReducer.fullname,
-      username : state.userReducer.username
+      username : state.userReducer.username,
+      images : state.userReducer.images
+
     }
   })
 
@@ -75,7 +77,7 @@ const Homepage = () => {
           </div>
           <div className='col-lg-4 col-md-6 col-sm-6 col-xs-6'>
             <div className='d-flex'>
-            <Avatar mb={5}></Avatar>
+            <Avatar mb={5} src={API_URL+images}></Avatar>
             <div className='mt-2 ms-3'>
             <Text fontSize={'xs'} textColor={'black'}>{username}</Text>
             <Text fontSize={'xs'} className='text-muted' >{fullname}</Text>

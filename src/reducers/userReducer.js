@@ -10,8 +10,8 @@ const INITIAL_STATE={
     email: '',
     status: '',
     status_id:null,
+    images:'',
     posting:[]
-
 }
 
 // argumen action untuk membawa data yg kita simpan,dan membawa kata kunci tempat

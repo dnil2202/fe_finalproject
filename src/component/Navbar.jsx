@@ -8,9 +8,7 @@ import {
     HStack,
     Button,
     useDisclosure,
-    VStack,
-    IconButton,
-    CloseButton,
+    Text,
     Avatar,
     Input,
     MenuButton,
@@ -49,14 +47,16 @@ const Navbar = () => {
     const [img,setImg]=useState('')
     const [caption,setCaption]=useState('')
 
-    const{id}= useSelector((state)=>{
+    const{id,status,images}= useSelector((state)=>{
       return {
-          id:state.userReducer.idusers
+          id:state.userReducer.idusers,
+          status:state.userReducer.status,
+          images:state.userReducer.images
+          
       }
   })
   console.log(id)
-  console.log(img)
-  console.log(caption)
+  console.log(status)
 
     const onLogout = ()=>{
       dispatch(logoutAction())
@@ -161,7 +161,10 @@ const Navbar = () => {
             {/* <Button variant="ghost"><AiFillHeart size={24}/></Button> */}
             <Menu>
               <MenuButton>
-                <Avatar size={'sm'}></Avatar>
+                <div className='d-flex'>
+                <Text as={'sup'} mt={5} me={2}textColor={status=='Unverified'?'red.400':'blue.600'} className='fw-bold'>{status}</Text>
+                <Avatar size={'sm'} src={API_URL+images}></Avatar>
+                </div>
               </MenuButton>
               <MenuList width={'fit-content'} >
                 <MenuItem onClick={()=>navigate(`/profil/`)}>Profile</MenuItem>

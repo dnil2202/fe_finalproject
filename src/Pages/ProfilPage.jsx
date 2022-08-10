@@ -36,14 +36,15 @@ const ProfilPage = () => {
 
     console.log('update', updateCaption)
 
-    const{username, posting}= useSelector((state)=>{
+    const{username, posting,images}= useSelector((state)=>{
         return {
             username:state.userReducer.username,
-            posting:state.userReducer.posting
+            posting:state.userReducer.posting,
+            images:state.userReducer.images,
         }
     })
 
-    console.log('idposting:',postDetail.idposting)
+    console.log('images:',API_URL + images)
 
     const openModalDetail=(toggle, val)=>{
         setPostDetail(val)
@@ -119,7 +120,7 @@ const ProfilPage = () => {
                     <div className=' row pb-5 ps-5 '>
                         <div className='col-3 d-flex justify-content-end'>
                             <Box>
-                                <Avatar size={'xl'}>
+                                <Avatar size={'xl'} src={API_URL+images}>
                                 </Avatar>
                             </Box>
                         </div>

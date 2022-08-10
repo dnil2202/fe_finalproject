@@ -24,6 +24,7 @@ const LandingPages = (props) => {
     console.log(password)
 
     const onLogin=async()=>{
+        setIsLoading(true)
         let res = await dispatch(loginMiddleWare(email,password))
         if(res.success){
             navigate('/home', {replace:true})
