@@ -13,6 +13,7 @@ import { API_URL } from './helper';
 import { loginAction } from './action/useraction';
 import { useDispatch, useSelector } from 'react-redux';
 import { useState,useEffect } from 'react';
+import Resend from './Pages/Resend';
 
 function App() {
 

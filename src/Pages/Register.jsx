@@ -46,15 +46,16 @@ const Register = () => {
                     password
                 })
                 .then((res)=>{
+                    console.log('data token',res.data)
                     if(res.data.success){
                         toast({
-                            title:"Account created Silahkan Login",
+                            title:"Account created Silahkan Cek Email",
                             desctiption: `Welcome ${res.data.username}`,
                             status:"success",
                             duration:5000,
                             isClosable:true
                         })
-                        navigate('/')
+                        // navigate('/')
                     }
                 }).catch((err)=>{
                     setIsLoading(false)
