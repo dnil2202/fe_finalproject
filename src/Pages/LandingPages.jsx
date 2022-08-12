@@ -20,15 +20,16 @@ const LandingPages = (props) => {
     const [isLoading, setIsLoading] = useState(false)
     const [visible,setVisible]=useState('password')
 
-    console.log(email)
-    console.log(password)
+
+    console.log('email :',email)
 
     const onLogin=async()=>{
         setIsLoading(true)
-        let res = await dispatch(loginMiddleWare(email,password))
+            let res = await dispatch(loginMiddleWare(email,password))
         if(res.success){
             navigate('/home', {replace:true})
         }
+   
         // setIsLoading(true)
         // axios.post(API_URL+`/auth/login`,{
         //     email,
@@ -71,8 +72,7 @@ const LandingPages = (props) => {
                 <Box backgroundColor={'whiteAlpha.600'} shadow={'xl'} border={'1px'} w={400}>
             <Text textAlign={'center'} color={'blackAlpha.800'} fontSize={50} fontStyle={'unset'} mb={5} >GUILD</Text>
             <Stack spacing={3} mx={10} >
-                <Input onChange={(e)=>setEmail(e.target.value)}  isInvalid={email.includes('@') && email.includes('.com')?false:true} errorBorderColor={'red.300'} placeholder='Email' size='sm' name='email' />
-                <Text as={'sup'} display={email.length>0?'ruby':'none'} textColor={'red.400'} >{email.includes('@') && email.includes('.com')?'':'email tidak sesuai'}</Text>
+                <Input onChange={(e)=>setEmail(e.target.value)} placeholder='Email or Username' size='sm' />
                 <div className='d-flex border-1' >
                 <Input onChange={(e)=>setPassword(e.target.value)} placeholder='Password' size='sm' type={visible} variant={'unstyled'} borderEnd={'none'} ps={2}  />
                 <span className="input-group-text bg-transparent border-0 rounded-0" onClick={showPass} ><BsFillEyeFill/></span>
@@ -85,7 +85,7 @@ const LandingPages = (props) => {
             </div>
             <Text textAlign={'center'} my={3} textColor={'gray.600'} fontSize={'revert'}  >OR</Text>
             <div className='d-flex justify-content-center '>
-            <FcGoogle size={40} className='bg-white'/><Button className='bg-white pt-2 rounded-0'w={150} fontSize={'small'}  > SIGN IN WITH GOOGLE</Button>
+            {/* <FcGoogle size={40} className='bg-white'/><Button className='bg-white pt-2 rounded-0'w={150} fontSize={'small'}  > SIGN IN WITH GOOGLE</Button> */}
             </div>
             <div className='d-flex justify-content-center pt-3'>
             <Button w={200} colorScheme={'white'}  textColor={'gray.600'} mb={5} onClick={()=>navigate('/reset')} > Forgot Password</Button>

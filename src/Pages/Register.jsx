@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Box, Input, Stack, Text, Button,useToast, cssVar } from '@chakra-ui/react/'
+import { Box, Input, Stack, Text, Button,useToast } from '@chakra-ui/react/'
 import axios from 'axios'
 import { API_URL } from '../helper'
 import { BsFillEyeFill } from 'react-icons/bs';
@@ -55,7 +55,6 @@ const Register = () => {
                             duration:5000,
                             isClosable:true
                         })
-                        // navigate('/')
                     }
                 }).catch((err)=>{
                     setIsLoading(false)
@@ -68,7 +67,6 @@ const Register = () => {
                     })
                 })
     }
-
     const showPass = ()=>{
         if(visible=="password"){
             setVisible("text")
@@ -76,7 +74,6 @@ const Register = () => {
             setVisible("password")
         }
     }
-
 
   return (
       <div style={{backgroundColor:'#F6F7F9', height:'100vh'}}>
@@ -96,8 +93,7 @@ const Register = () => {
                     <div>
                     {isWeakPass && <Text as={'sup'} ms={10} textColor={'red.300'}>Your password is weak</Text>}
                     </div>
-                    
-                    <div className='input-group border-round d-flex justify-content-center'>
+                    <div className='input-group border-round d-flex justify-content-center mt-3'>
                     <Input w={260}  placeholder='Password' size='sm' value={repeatPass} name='repeat' onChange={(e)=>setRepeatPass(e.target.value)} type={visible}  />
                     <span className="input-group-text bg-transparent border-start-0" onClick={showPass} ><BsFillEyeFill/></span>
                     </div>
@@ -109,7 +105,7 @@ const Register = () => {
                 <Text textAlign={'center'} my={3} textColor={'gray.400'} fontSize={'sm'}>Data Policy and Cookies Policy</Text>
                 </div>
                 <div className='d-flex justify-content-center'>
-                <Button w={300} colorScheme={'blue'} mb={5} onClick={onSubmit} isLoading={isLoading}> SIGN UP</Button>
+                <Button w={300} colorScheme={'blue'} mb={5} onClick={onSubmit} isLoading={isLoading} isDisabled={input.password === repeatPass && input.password.length >0 && input.email.includes('@') && input.email.includes('.co') && !isWeakPass?false:true}> SIGN UP</Button>
                 </div>
                 <div className='mb-5 d-flex justify-content-center'>
                 <Text textAlign={'center'}  textColor={'gray.400'} fontSize={'sm'}  >HAVE AN ACCOUNT ?</Text>

@@ -14,7 +14,6 @@ export const loginAction=(data)=>{
 
 export const loginMiddleWare=(email,password)=>{
     return async (dispatch)=>{
-
         try {
             let res = await axios.post(API_URL+`/auth/login`,{
                 email, password

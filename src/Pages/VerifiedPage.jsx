@@ -19,6 +19,7 @@ const VerifiedPage = () => {
     useEffect(()=>{
         handleVerified()
     }, [])
+
     const handleVerified = async()=>{
         try {
             let res = await axios.patch(`${API_URL}/auth/verified`,{},{
@@ -64,8 +65,6 @@ const VerifiedPage = () => {
         }
 
     }
-
-
 
   return (
     <div style={{backgroundColor:'#F6F7F9'}} >
