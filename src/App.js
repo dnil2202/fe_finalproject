@@ -13,10 +13,17 @@ import { API_URL } from './helper';
 import { loginAction } from './action/useraction';
 import { useDispatch, useSelector } from 'react-redux';
 import { useState,useEffect } from 'react';
+import NotFoundPage from './Pages/NotFoundPage';
 
 function App() {
 
   const dispatch = useDispatch()
+
+  const { idusers } = useSelector(({ userReducer }) => {
+    return {
+      idusers: userReducer.idusers
+    }
+  })
   
   const keepLogin=()=>{
     let sosmed = localStorage.getItem('sosmed')
@@ -47,15 +54,24 @@ function App() {
   return (
     <div>
       <Routes>
-        <Route path='/' element={<LandingPages/>}/>
-        <Route path='/home' element={<Homepage/>}/>
-        <Route path='/register' element={<Register/>}/>
-        <Route path='/login' element={<Login/>}/>
-        <Route path='/reset' element={<ForgotPass/>}/>
-        <Route path='/profil' element={<ProfilPage/>}/>
-        <Route path='/edit' element={<EditProfil/>}/>
-        <Route path='/change' element={<ChangePassword/>}/>
+        {
+          idusers ?
+          <>
+          <Route path='/home' element={<Homepage/>}/>
+          <Route path='/profil' element={<ProfilPage/>}/>
+          <Route path='/edit' element={<EditProfil/>}/>
+          <Route path='/change' element={<ChangePassword/>}/>
+          </>
+          :
+          <>
+          <Route path='/register' element={<Register/>}/>
+          <Route path='/' element={<LandingPages/>}/>
+          <Route path='/login' element={<Login/>}/>
+          <Route path='/reset' element={<ForgotPass/>}/>
+          </>
+        }
         <Route path='/verification/:token' element={<VerifiedPage/>}/>
+        <Route path='*' element={<NotFoundPage/>} />
       </Routes>
     </div>
   );

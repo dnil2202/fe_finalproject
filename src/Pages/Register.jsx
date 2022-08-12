@@ -56,10 +56,11 @@ const Register = () => {
                             isClosable:true
                         })
                     }
+                    setIsLoading(false)
                 }).catch((err)=>{
                     setIsLoading(false)
                     toast({
-                        title:`${err}`,
+                        title:`${err.response.data.message}`,
                         desctiption: 'eror',
                         status:"warning",
                         duration:3000,
