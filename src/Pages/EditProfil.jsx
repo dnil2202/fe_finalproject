@@ -14,6 +14,7 @@ const EditProfil = () => {
     const [newUsername,setNewUserName]=useState('')
     const [newEmail,setNewEmail]=useState('')
     const [addAvatar,setAddAvatar]=useState('')
+    
 
 
     const{id,fullname,username,email,images} = useSelector((state)=>{
@@ -25,13 +26,14 @@ const EditProfil = () => {
             images:state.userReducer.images,
         }
     })
+    console.log(addAvatar.length)
 
     const updateData =()=>{
         let formData = new FormData()
         formData.append('data',JSON.stringify({
-            fullname: newFullname,
-            username:newUsername,
-            email:newEmail,
+            fullname: newFullname.length>0?newFullname:fullname,
+            username:newUsername.length>0?newUsername:username,
+            // email:newEmail,
         }))
         formData.append('images',addAvatar)
         axios.patch(API_URL+`/auth/all/${id}`,formData).then((res)=>{
@@ -54,7 +56,7 @@ const EditProfil = () => {
         })
     } 
 
-    console.log(newFullname,newUsername,newEmail)
+   
   return (
     <div>
         <Navbar/>
@@ -84,7 +86,7 @@ const EditProfil = () => {
                             </div>
                             <div className='d-flex justify-content-center mb-4'>
                                 <Text className='fw-bold' fontSize={'sm'}>Email</Text>
-                                <Input size={'sm'} w={'60'} ms={12} bg={'gray.200'} defaultValue={email} onChange={(e)=>setNewEmail(e.target.value)}  />
+                                <Input size={'sm'} w={'60'} ms={12} bg={'gray.200'} defaultValue={email} isDisabled onChange={(e)=>setNewEmail(e.target.value)}  />
                             </div>
                         </div>
                         <div className='d-flex justify-content-center'>
