@@ -1,25 +1,30 @@
 import React, { useEffect, useState } from 'react';
-import { Box,Text,Avatar, List, ListItem, Button, Input, Divider } from '@chakra-ui/react';
+import { Box,Text,Avatar, List, ListItem, Button, Input, Divider, Container } from '@chakra-ui/react';
 import axios from 'axios'
 import { API_URL } from '../helper';
 import Navbar from '../component/Navbar';
-import {useSelector} from 'react-redux'
+import {useSelector, useDispatch} from 'react-redux'
+import {GoUnverified} from 'react-icons/go'
+import { logoutAction } from '../action/useraction';
+import { useNavigate } from 'react-router-dom';
 
 
 const Homepage = () => {
   const [dataPosting, setDataPosting]=useState([])
+  const navigate = useNavigate()
+  const dispatch = useDispatch()
 
-  const {fullname,username,images} = useSelector((state)=>{
+  const {fullname,username,images,status} = useSelector((state)=>{
     console.log(state)
     return{
       fullname : state.userReducer.fullname,
       username : state.userReducer.username,
-      images : state.userReducer.images
-
+      images : state.userReducer.images,
+      status : state.userReducer.status
     }
   })
 
-  console.log(dataPosting)
+  console.log(status)
 
   const getData =()=>{
     axios.get(API_URL+'/posting')
@@ -33,6 +38,11 @@ const Homepage = () => {
   React.useEffect(() => {
     getData();
 }, []);
+
+const onLogout = ()=>{
+  dispatch(logoutAction())
+  navigate('/')
+}
 
 
   const printData=()=>{
@@ -65,7 +75,29 @@ const Homepage = () => {
   }
 
     return (
-      <div>
+      <div >
+        {
+          status == 'Unverified'?
+          <>
+          <div style={{backgroundColor:'#F6F7F9', paddingTop:'20px', height:'100vh'}}>
+          <Container >
+            <div className='d-flex justify-content-center'>
+              <Box shadow={'md'} mt={20} boxSize={'md'}  bgColor={'white'}>
+                <div className='d-flex justify-content-center mb-5 mt-5'>
+                  <GoUnverified size={100}/>
+                  </div>
+                <Text textAlign={'center'}>Your account Unverified</Text>
+              <Text textAlign={'center'}>Verified Your account first for access all feature</Text>
+              <div className='d-flex justify-content-center'>
+              <Button mt={3} onClick={onLogout} colorScheme='telegram'>Logout</Button>
+              </div>
+              </Box>
+            </div>
+          </Container>
+          </div>
+          </>
+          :(
+            <>
         <Navbar/>
       <div style={{backgroundColor:'#F6F7F9', paddingTop:'20px'}}>
       <div className='container ' >
@@ -123,6 +155,8 @@ const Homepage = () => {
         </div>
       </div>
       </div>
+      </>
+    )}
       </div>
     )
 };

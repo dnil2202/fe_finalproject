@@ -28,6 +28,7 @@ export const loginMiddleWare=(email,password)=>{
             })
             return {success :true}
         } catch (error) {
+            return{success :false}
             console.log(error)
         }
     }
