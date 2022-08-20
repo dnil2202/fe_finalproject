@@ -15,7 +15,6 @@ const Homepage = () => {
   const dispatch = useDispatch()
 
   const {fullname,username,images,status} = useSelector((state)=>{
-    console.log(state)
     return{
       fullname : state.userReducer.fullname,
       username : state.userReducer.username,
@@ -24,7 +23,7 @@ const Homepage = () => {
     }
   })
 
-  console.log(status)
+  // console.log(dataPosting[0].likes)
 
   const getData =()=>{
     axios.get(API_URL+'/posting')
@@ -48,17 +47,35 @@ const onLogout = ()=>{
   const printData=()=>{
     return dataPosting.map((val,idx)=>{
       return(
-        <div className='col-lg-12'>
+        <div className='col-lg-12' key={val.idposting}>
         <div className='card w-100 h-100 mb-3'>
           <div className='d-flex mx-2 my-2'>
-          <Avatar size={'sm'}>
+          <Avatar size={'sm'} src={API_URL+val.avatar}>
           </Avatar>
           <Text fontFamily={'serif'} fontSize={'md'} ms={'5'}>{val.user_name_post}</Text>
           </div>
           <img src={API_URL+ val.images} className='card-img-top w-100' style={{height:'300px'}} />
           <div className='card-body'>
-          <Text as={'sup'} >20 Likes</Text>
+            {val.likes ?
+            <Text as={'sup'} className='fw-bold' >{val.likes.length} Likes</Text>
+            :
+            <Text as={'sup'} className='fw-bold' >0 Likes</Text>
+          }
             <p className='card-title'>{val.caption}</p>
+            {
+              val.comment &&
+              val.comment.map((v)=>{
+                console.log(v.comment)
+                console.log('=======================================disini')
+                return  (
+                <div className='w-75'>
+                <Text as={'sup'} className='fw-bold me-2'>{v.user_name_comment}</Text>
+                <Text as={'sup'} className='text-muted'>{v.comment}</Text>
+                </div>
+                )
+              })
+             
+            }
           <div className='mb-2'>
             <small className='text-muted'>{val.add_date.split('').splice(0,10).join('')}</small>
           </div>
@@ -79,6 +96,7 @@ const onLogout = ()=>{
         {
           status == 'Unverified'?
           <>
+          <Navbar/>
           <div style={{backgroundColor:'#F6F7F9', paddingTop:'20px', height:'100vh'}}>
           <Container >
             <div className='d-flex justify-content-center'>

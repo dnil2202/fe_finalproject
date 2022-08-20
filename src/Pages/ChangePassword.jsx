@@ -16,17 +16,7 @@ const ChangePassword = () => {
                         <Button border={'none'} size={'sm'} _hover={'none'} bg={'white'} >Change Password</Button>
                     </div>
                     <div className='col-8'>
-                        <div className='d-flex mx-5 mt-3 '>
-                            <Avatar size={'sm'}></Avatar>
-                            <div>
-                            <Text fontSize={'sm'} ms={5}>Daniel Herianto Sibarani</Text>
-                            </div>
-                        </div>
                         <div className='  mt-3 w-100' >
-                            <div className='d-flex justify-content-center mb-4'>
-                                <Text className='fw-bold' fontSize={'sm'}>Password Lama</Text>
-                                <Input size={'sm'} ms={14} w={'60'} bg={'gray.200'} />
-                            </div>
                             <div className='d-flex justify-content-center mb-4'>
                                 <Text className='fw-bold' fontSize={'sm'}>Password Baru</Text>
                                 <Input size={'sm'} w={'60'} ms={14} bg={'gray.200'} />

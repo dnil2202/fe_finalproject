@@ -20,7 +20,7 @@ import Navbar from '../component/Navbar'
 import axios from 'axios'
 import { API_URL } from '../helper'
 import {useSelector} from 'react-redux'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate,useSearchParams } from 'react-router-dom'
 import { AiOutlineMenu } from 'react-icons/ai'
 
 
@@ -34,17 +34,18 @@ const ProfilPage = () => {
     const navigate=useNavigate()
     const toast = useToast()
 
-    console.log('update', updateCaption)
 
-    const{username, posting,images}= useSelector((state)=>{
+    const{username,email, posting,bio,images,status}= useSelector((state)=>{
         return {
             username:state.userReducer.username,
+            email:state.userReducer.email,
             posting:state.userReducer.posting,
             images:state.userReducer.images,
+            bio:state.userReducer.bio,
+            status:state.userReducer.status,
         }
     })
 
-    console.log('images:',API_URL + images)
 
     const openModalDetail=(toggle, val)=>{
         setPostDetail(val)
@@ -75,7 +76,7 @@ const ProfilPage = () => {
 
     const updatePosting =()=>{
         axios.patch(API_URL+`/posting/${postDetail.idposting}`,{
-            caption:updateCaption
+            caption:updateCaption.length>0?updateCaption:postDetail.caption
         })
         .then((res)=>{
             if(res.data.success){
@@ -100,6 +101,26 @@ const ProfilPage = () => {
         
     }
 
+    
+    const resendVerif = async ()=>{
+        try {
+            await axios.post(`${API_URL}/auth/resend/`,{
+                email:email
+            }).then((res)=>{
+                // console.log(res.data.token)
+                toast({
+                    title:"Success please cek your email",
+                    desctiption: `Welcome ${res.data.username}`,
+                    status:"success",
+                    duration:5000,
+                    isClosable:true
+                })
+            })
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
   const printData = ()=>{
     return posting.map((val,idx)=>{
         return(
@@ -116,6 +137,14 @@ const ProfilPage = () => {
         <Navbar/>
         <div style={{backgroundColor:'#F6F7F9', paddingTop:'20px', height:'100vh'}}>
             <Container borderColor={'red'} maxW={'container.md'}>
+                {
+                    status == 'Unverified' &&
+                    <>
+                    <div className='d-flex justify-content-center'>
+                    <Button textAlign={'center'} textColor={'red.300'} variant={'unstyled'} onClick={resendVerif}>Please click to resend verification link to access all features</Button>
+                    </div>
+                    </>
+                }
                 <Box border={'2px'} borderTop={'none'} borderLeft={'none'} borderRight={'none'} borderBlockEndColor={'gray.400'}  marginY={5}>
                     <div className=' row pb-5 ps-5 '>
                         <div className='col-3 d-flex justify-content-end'>
@@ -130,10 +159,9 @@ const ProfilPage = () => {
                                 <Button size={'xs'} onClick={()=>navigate('/edit')}> Edit Profil</Button>
                             </div>
                             <div className='d-flex'>
-                                <Text fontSize={'xs'} fontFamily={'sans-serif'} color={'black'} mt={5}>10 KIRIMAN</Text>
-                                <Text fontSize={'xs'} fontFamily={'sans-serif'} color={'black'} mt={5} ms={5}>20 Pengikut</Text>
-                                <Text fontSize={'xs'} fontFamily={'sans-serif'} color={'black'} mt={5} ms={5}>20 Mengikuti</Text>
+                                <Text fontSize={'xs'} fontFamily={'sans-serif'} color={'black'} mt={5} className='fw-bold'>{posting.length} Kiriman</Text>
                             </div>
+                                <Text as={'sup'}>{bio}</Text>
                         </div>
                     </div>
                 </Box>

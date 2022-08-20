@@ -1,5 +1,5 @@
-import { Avatar, Button, Container, Input, Stack , Text, useToast} from '@chakra-ui/react'
-import React, { useState } from 'react'
+import { Avatar, Button, Container, Input, Stack , Text, Textarea, useToast} from '@chakra-ui/react'
+import React, { useState, useEffect } from 'react'
 import Navbar from '../component/Navbar'
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
@@ -12,30 +12,42 @@ const EditProfil = () => {
 
     const [newFullname,setNewFullName]=useState('')
     const [newUsername,setNewUserName]=useState('')
-    const [newEmail,setNewEmail]=useState('')
+    const [newBio,setNewBio]=useState('')
     const [addAvatar,setAddAvatar]=useState('')
     
 
 
-    const{id,fullname,username,email,images} = useSelector((state)=>{
+    const{id,fullname,username,bio,email,images} = useSelector((state)=>{
         return{
             id:state.userReducer.idusers,
             fullname:state.userReducer.fullname,
             username:state.userReducer.username,
             email:state.userReducer.email,
             images:state.userReducer.images,
+            bio:state.userReducer.bio,
         }
     })
-    console.log(addAvatar.length)
+
 
     const updateData =()=>{
         let formData = new FormData()
-        formData.append('data',JSON.stringify({
-            fullname: newFullname.length>0?newFullname:fullname,
-            username:newUsername.length>0?newUsername:username,
-            // email:newEmail,
-        }))
-        formData.append('images',addAvatar)
+        if(addAvatar.length>0){
+            formData.append('data',JSON.stringify({
+                fullname: newFullname.length>0?newFullname:fullname,
+                username:newUsername.length>0?newUsername:username,
+                bio:newBio.length>0?newBio:bio,
+                // email:newEmail,
+            }))
+            formData.append('images',addAvatar)
+        }else{
+            formData.append('data',JSON.stringify({
+                fullname: newFullname.length>0?newFullname:fullname,
+                username:newUsername.length>0?newUsername:username,
+                bio:newBio.length>0?newBio:bio,
+                // email:newEmail,
+            }))
+            formData.append('images',addAvatar)
+        }
         axios.patch(API_URL+`/auth/all/${id}`,formData).then((res)=>{
             if(res.data.success){
                 toast({
@@ -46,8 +58,9 @@ const EditProfil = () => {
                 })
               }
         }).catch((err)=>{
+            console.log(err.response.data.message)
             toast({
-                title: 'Error Upload',
+                title: err.response.data.message,
                 description: err.message,
                 status: 'error',
                 duration: 2000,
@@ -86,7 +99,11 @@ const EditProfil = () => {
                             </div>
                             <div className='d-flex justify-content-center mb-4'>
                                 <Text className='fw-bold' fontSize={'sm'}>Email</Text>
-                                <Input size={'sm'} w={'60'} ms={12} bg={'gray.200'} defaultValue={email} isDisabled onChange={(e)=>setNewEmail(e.target.value)}  />
+                                <Input size={'sm'} w={'60'} ms={12} bg={'gray.200'} defaultValue={email} isDisabled />
+                            </div>
+                            <div className='d-flex justify-content-center mb-4'>
+                                <Text className='fw-bold' fontSize={'sm'}>Bio</Text>
+                                <Textarea size={'sm'} w={'60'} ml={12} bg={'gray.100'} defaultValue={bio} onChange={(e)=>setNewBio(e.target.value)}  />
                             </div>
                         </div>
                         <div className='d-flex justify-content-center'>

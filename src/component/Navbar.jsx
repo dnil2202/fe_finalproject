@@ -55,8 +55,7 @@ const Navbar = () => {
           
       }
   })
-  console.log(id)
-  console.log(status)
+
 
     const onLogout = ()=>{
       dispatch(logoutAction())
@@ -128,6 +127,9 @@ const Navbar = () => {
           >
             <Button variant="ghost" onClick={()=>navigate('/home')}><AiFillHome size={24}/></Button>
             {/* <Button variant="ghost" ><AiFillMessage size={24}/></Button> */}
+            {
+              status == 'Verified' &&
+              <>
             <Button variant="ghost" onClick={()=>setToggle(!toggle)}><AiFillPlusCircle size={24}/></Button>
             <Modal isOpen={toggle} onClose={()=>setToggle(!toggle)} size={'4xl'} >
               <ModalOverlay/>
@@ -158,6 +160,8 @@ const Navbar = () => {
                 </ModalFooter>
               </ModalContent>
             </Modal>
+              </>
+            }
             {/* <Button variant="ghost"><AiFillHeart size={24}/></Button> */}
             <Menu>
               <MenuButton>

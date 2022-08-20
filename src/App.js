@@ -19,9 +19,10 @@ function App() {
 
   const dispatch = useDispatch()
 
-  const { idusers } = useSelector(({ userReducer }) => {
+  const { idusers,status } = useSelector(({ userReducer }) => {
     return {
-      idusers: userReducer.idusers
+      idusers: userReducer.idusers,
+      status: userReducer.status
     }
   })
   
@@ -34,7 +35,6 @@ function App() {
         }
       })
       .then((res)=>{
-        console.log(res.data)
         if(res.data.idusers){
           localStorage.getItem('sosmed', res.data.idusers);
           delete res.data.token
@@ -64,13 +64,13 @@ function App() {
           </>
           :
           <>
-          <Route path='/register' element={<Register/>}/>
           <Route path='/' element={<LandingPages/>}/>
+          <Route path='/register' element={<Register/>}/>
           <Route path='/login' element={<Login/>}/>
           <Route path='/reset' element={<ForgotPass/>}/>
           </>
         }
-        <Route path='/verification/:token' element={<VerifiedPage/>}/>
+          <Route path='/verification/:token' element={<VerifiedPage/>}/>
         <Route path='*' element={<NotFoundPage/>} />
       </Routes>
     </div>

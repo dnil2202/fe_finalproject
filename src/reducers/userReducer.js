@@ -7,6 +7,7 @@ const INITIAL_STATE={
     id: null, 
     fullname: '',
     username: '',
+    bio:'',
     email: '',
     status: '',
     status_id:null,
