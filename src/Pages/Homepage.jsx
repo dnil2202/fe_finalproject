@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Box,Text,Avatar, List, ListItem, Button, Input, Divider, Container } from '@chakra-ui/react';
+import { Box,Text,Avatar,useToast, List, ListItem, Button, Input, Divider, Container } from '@chakra-ui/react';
 import axios from 'axios'
 import { API_URL } from '../helper';
 import Navbar from '../component/Navbar';
@@ -7,15 +7,19 @@ import {useSelector, useDispatch} from 'react-redux'
 import {GoUnverified} from 'react-icons/go'
 import { logoutAction } from '../action/useraction';
 import { useNavigate } from 'react-router-dom';
+import { AiFillHeart,AiOutlineHeart} from "react-icons/ai";
 
 
 const Homepage = () => {
   const [dataPosting, setDataPosting]=useState([])
+  const [addComment, setAddComment]=useState('')
   const navigate = useNavigate()
   const dispatch = useDispatch()
+  const toast = useToast()
 
-  const {fullname,username,images,status} = useSelector((state)=>{
+  const {id,fullname,username,images,status} = useSelector((state)=>{
     return{
+      id : state.userReducer.idusers,
       fullname : state.userReducer.fullname,
       username : state.userReducer.username,
       images : state.userReducer.images,
@@ -23,7 +27,8 @@ const Homepage = () => {
     }
   })
 
-  // console.log(dataPosting[0].likes)
+
+  console.log(addComment)
 
   const getData =()=>{
     axios.get(API_URL+'/posting')
@@ -38,10 +43,42 @@ const Homepage = () => {
     getData();
 }, []);
 
+const submitComment =(e)=>{
+  let idPosting = parseInt(e.target.value)
+  console.log(idPosting)
+  console.log('=================================================================SIni')
+  axios.post(API_URL + '/comment',{
+    comment:addComment,
+    user_comment_id:id,
+    posting_id:idPosting
+  }).then((res)=>{
+    if(res.data.success){
+      setAddComment('')
+      toast({
+        title: "Comment Submited",
+        description: `Comment Success`,
+        status: "success",
+        duration: 3000,
+        isClosable: true
+    })
+    }
+  }).catch((err)=>{
+    toast({
+      title: err.response.data.message,
+      description: err.message,
+      status: 'error',
+      duration: 2000,
+      isClosable: true,
+    })
+  })
+}
+
 const onLogout = ()=>{
   dispatch(logoutAction())
   navigate('/')
 }
+
+
 
 
   const printData=()=>{
@@ -56,17 +93,19 @@ const onLogout = ()=>{
           </div>
           <img src={API_URL+ val.images} className='card-img-top w-100' style={{height:'300px'}} />
           <div className='card-body'>
+              <AiFillHeart size={20} />
+              <AiOutlineHeart size={20}/>
+            <div>
             {val.likes ?
             <Text as={'sup'} className='fw-bold' >{val.likes.length} Likes</Text>
             :
             <Text as={'sup'} className='fw-bold' >0 Likes</Text>
           }
+          </div>
             <p className='card-title'>{val.caption}</p>
             {
               val.comment &&
               val.comment.map((v)=>{
-                console.log(v.comment)
-                console.log('=======================================disini')
                 return  (
                 <div className='w-75'>
                 <Text as={'sup'} className='fw-bold me-2'>{v.user_name_comment}</Text>
@@ -74,15 +113,14 @@ const onLogout = ()=>{
                 </div>
                 )
               })
-             
             }
           <div className='mb-2'>
             <small className='text-muted'>{val.add_date.split('').splice(0,10).join('')}</small>
           </div>
           <Divider/>
           <div className='d-flex justify-content-between'>
-          <Input size={'sm'} border={'none'} variant={'unstyled'} placeholder='Tambahkan Komentar anda'></Input>
-          <Button size={'xs'} border={'none'} bgColor={'white'} variant={'unstyled'} textColor={'blue'}>Post</Button>
+          <Input size={'sm'} border={'none'} variant={'unstyled'} onChange={(e)=>setAddComment(e.target.value)} value={addComment} placeholder='Tambahkan Komentar anda'></Input>
+          <Button size={'xs'} border={'none'} bgColor={'white'} variant={'unstyled'} textColor={'blue'} value={val.idposting} onClick={submitComment}  >Post</Button>
           </div>
           </div>
         </div>
@@ -133,42 +171,6 @@ const onLogout = ()=>{
             <Text fontSize={'xs'} className='text-muted' >{fullname}</Text>
             </div>
             </div>
-            <Box border={'1px'} height={'max-content'} borderColor={'gray.400'} w={'sm'} width={'xs'} >
-              <List spacing={3} mt={2}>
-                <ListItem>
-                  <div className='d-block'>
-                <div className='d-flex mb-2 justify-content-between'>
-                  <div className='d-flex'>
-                  <Avatar size={'xs'} mx={5}/>
-                  <Text fontSize={'xs'} mt={1}>Admin</Text>
-                  </div>
-                  <Button size={'xs'} colorScheme={'whiteAlpha'} textColor={'blue.400'}>Ikuti</Button>
-                </div>
-                <div className='d-flex mb-2 justify-content-between'>
-                  <div className='d-flex'>
-                  <Avatar size={'xs'} mx={5}/>
-                  <Text fontSize={'xs'} mt={1}>Admin</Text>
-                  </div>
-                  <Button size={'xs'} colorScheme={'whiteAlpha'} textColor={'blue.400'}>Ikuti</Button>
-                </div>
-                <div className='d-flex mb-2 justify-content-between'>
-                  <div className='d-flex'>
-                  <Avatar size={'xs'} mx={5}/>
-                  <Text fontSize={'xs'} mt={1}>Admin</Text>
-                  </div>
-                  <Button size={'xs'} colorScheme={'whiteAlpha'} textColor={'blue.400'}>Ikuti</Button>
-                </div>
-                <div className='d-flex mb-2 justify-content-between'>
-                  <div className='d-flex'>
-                  <Avatar size={'xs'} mx={5}/>
-                  <Text fontSize={'xs'} mt={1}>Admin</Text>
-                  </div>
-                  <Button size={'xs'} colorScheme={'whiteAlpha'} textColor={'blue.400'}>Ikuti</Button>
-                </div>
-                  </div>
-                </ListItem>
-              </List>
-            </Box>
           </div>
         </div>
       </div>
