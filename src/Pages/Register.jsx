@@ -48,6 +48,7 @@ const Register = () => {
                 .then((res)=>{
                     console.log('data token',res.data)
                     if(res.data.success){
+                        // navigate('/',{replace:true})
                         toast({
                             title:"Account created Silahkan Cek Email",
                             desctiption: `Welcome ${res.data.username}`,

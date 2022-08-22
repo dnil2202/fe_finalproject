@@ -102,7 +102,6 @@ const Navbar = () => {
       w="full"
       px={{ base: 5, sm: 4 }}
       py={1}
-      shadow="md"
       >
       <Flex alignItems="center" justifyContent="space-around" mx="auto">
         <Flex>

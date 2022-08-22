@@ -6,29 +6,30 @@ import Navbar from '../component/Navbar';
 import {useSelector, useDispatch} from 'react-redux'
 import {GoUnverified} from 'react-icons/go'
 import { logoutAction } from '../action/useraction';
-import { useNavigate } from 'react-router-dom';
-import { AiFillHeart,AiOutlineHeart} from "react-icons/ai";
+import { useNavigate, useParams } from 'react-router-dom';
+import { AiFillLike,AiFillDislike,AiOutlineLike} from "react-icons/ai";
 
 
 const Homepage = () => {
   const [dataPosting, setDataPosting]=useState([])
   const [addComment, setAddComment]=useState('')
+  const [addLike, setAddLike]=useState(false)
   const navigate = useNavigate()
   const dispatch = useDispatch()
   const toast = useToast()
+  const params = useParams()
 
-  const {id,fullname,username,images,status} = useSelector((state)=>{
+  const {id,fullname,username,images,status,likes} = useSelector((state)=>{
     return{
       id : state.userReducer.idusers,
       fullname : state.userReducer.fullname,
       username : state.userReducer.username,
       images : state.userReducer.images,
-      status : state.userReducer.status
+      status : state.userReducer.status,
+      likes : state.userReducer.like
     }
   })
 
-
-  console.log(addComment)
 
   const getData =()=>{
     axios.get(API_URL+'/posting')
@@ -45,8 +46,6 @@ const Homepage = () => {
 
 const submitComment =(e)=>{
   let idPosting = parseInt(e.target.value)
-  console.log(idPosting)
-  console.log('=================================================================SIni')
   axios.post(API_URL + '/comment',{
     comment:addComment,
     user_comment_id:id,
@@ -73,9 +72,18 @@ const submitComment =(e)=>{
   })
 }
 
-const onLogout = ()=>{
-  dispatch(logoutAction())
-  navigate('/')
+const submitLike =(e)=>{
+  let idLike = parseInt(e.target.value)
+  console.log(idLike)
+    axios.post(API_URL+'/like',{
+      postId:idLike,
+      userId:id,
+    }).then((res)=>{
+      setAddLike(true)
+      console.log(res.data)
+    }).catch((err)=>{
+      console.log(err)
+    })
 }
 
 
@@ -83,6 +91,7 @@ const onLogout = ()=>{
 
   const printData=()=>{
     return dataPosting.map((val,idx)=>{
+      // console.log(val)
       return(
         <div className='col-lg-12' key={val.idposting}>
         <div className='card w-100 h-100 mb-3'>
@@ -91,10 +100,15 @@ const onLogout = ()=>{
           </Avatar>
           <Text fontFamily={'serif'} fontSize={'md'} ms={'5'}>{val.user_name_post}</Text>
           </div>
-          <img src={API_URL+ val.images} className='card-img-top w-100' style={{height:'300px'}} />
+          <img  src={API_URL+ val.images} className='card-img-top w-100' style={{height:'300px'}} />
           <div className='card-body'>
-              <AiFillHeart size={20} />
-              <AiOutlineHeart size={20}/>
+            <div>
+          <Button size={'xs'} border={'none'} bgColor={'white'} variant={'unstyled'} value={val.idposting} onClick={submitLike}>
+            {
+             addLike ? 'Unlike' : 'Like' 
+            }
+            </Button>
+            </div>
             <div>
             {val.likes ?
             <Text as={'sup'} className='fw-bold' >{val.likes.length} Likes</Text>
@@ -103,6 +117,9 @@ const onLogout = ()=>{
           }
           </div>
             <p className='card-title'>{val.caption}</p>
+            <Button variant={'unstyled'} size={'xs'} className='text-muted' onClick={()=> navigate(`/p/${val.idposting}`,{
+              state:val
+            })} >{val.comment ?`View all ${val.comment.length} Comment`:'View all'}</Button>
             {
               val.comment &&
               val.comment.map((v)=>{
@@ -144,9 +161,6 @@ const onLogout = ()=>{
                   </div>
                 <Text textAlign={'center'}>Your account Unverified</Text>
               <Text textAlign={'center'}>Verified Your account first for access all feature</Text>
-              <div className='d-flex justify-content-center'>
-              <Button mt={3} onClick={onLogout} colorScheme='telegram'>Logout</Button>
-              </div>
               </Box>
             </div>
           </Container>

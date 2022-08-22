@@ -92,10 +92,10 @@ const VerifiedPage = () => {
                             <BiMailSend size={100}></BiMailSend>
                             </div>
                             <Heading textAlign={'center'} size={'md'}>Uppss Email has been expired</Heading>
-                            <Text textAlign={'center'} fontSize={'sm'} mt={'3'} className='text-muted'>Email that we sent to you has been expired, please click button bellow to resend Email Verification </Text>
-                            <Input onChange={(e)=>setEmail(e.target.value)}/>
+                            <Text textAlign={'center'} fontSize={'sm'} mt={'3'} className='text-muted'>Email that we sent to you has been expired, cek your email for new verivication link or go to profile for resend verification link </Text>
+                            {/* <Input onChange={(e)=>setEmail(e.target.value)}/> */}
                             <div className='d-flex justify-content-center mt-3'>
-                            <Button colorScheme={'telegram'} onClick={resendVerif} >Resend Email</Button>
+                            {/* <Button colorScheme={'telegram'} onClick={resendVerif} >Resend Email</Button> */}
                             </div>
                         </div>
                     </>

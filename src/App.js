@@ -14,6 +14,7 @@ import { loginAction } from './action/useraction';
 import { useDispatch, useSelector } from 'react-redux';
 import { useState,useEffect } from 'react';
 import NotFoundPage from './Pages/NotFoundPage';
+import PostingDetail from './Pages/PostingDetail';
 
 function App() {
 
@@ -61,6 +62,7 @@ function App() {
           <Route path='/profil' element={<ProfilPage/>}/>
           <Route path='/edit' element={<EditProfil/>}/>
           <Route path='/change' element={<ChangePassword/>}/>
+          <Route path='/p/:id' element={<PostingDetail/>}/>
           </>
           :
           <>
