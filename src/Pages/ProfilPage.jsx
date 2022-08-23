@@ -30,7 +30,7 @@ const ProfilPage = () => {
     const [toggle, setToggle]=useState(false)
     const[toggleEdit,setToggleEdit]=useState(false)
     const [postDetail, setPostDetail] = useState([])
-    const[updateCaption, SetUpdateCaption]=useState('')
+    const[updateCaption, SetUpdateCaption]=useState(' ')
     const navigate=useNavigate()
     const toast = useToast()
 
@@ -45,6 +45,8 @@ const ProfilPage = () => {
             status:state.userReducer.status,
         }
     })
+
+    console.log(posting)
 
 
     const openModalDetail=(toggle, val)=>{

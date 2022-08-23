@@ -1,5 +1,5 @@
 import { Avatar, Button, Container, Input, Stack , Text, Textarea, useToast} from '@chakra-ui/react'
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import Navbar from '../component/Navbar'
 import { useNavigate } from 'react-router-dom';
 import { useSelector,useDispatch } from 'react-redux';
@@ -16,6 +16,7 @@ const EditProfil = () => {
     const [newUsername,setNewUserName]=useState('')
     const [newBio,setNewBio]=useState(' ')
     const [addAvatar,setAddAvatar]=useState('')
+    const hiddenFileInput = useRef(null)
 
     
 
@@ -74,6 +75,10 @@ const EditProfil = () => {
         })
     } 
 
+    const handleClick = event => {
+        hiddenFileInput.current.click();
+      };
+
 
   return (
     <div>
@@ -87,10 +92,11 @@ const EditProfil = () => {
                     </div>
                     <div className='col-8'>
                         <div className='d-flex mx-5 mt-3 '>
-                            <Avatar size={'sm'} src={API_URL+images} ></Avatar>
+                            <Avatar size={'md'} src={API_URL+images} ></Avatar>
                             <div>
-                            <Text fontSize={'sm'} ms={5}>{fullname}</Text>
-                            <Input variant={'flushed'} size={'xs'} onChange={(e)=>setAddAvatar(e.target.files[0])} type='file'/>
+                            <Text fontSize={'sm'} className='fw-bold' ms={5}>{fullname}</Text>
+                            <Input variant={'flushed'} size={'xs'} ref={hiddenFileInput} onChange={(e)=>setAddAvatar(e.target.files[0])} style={{display:'none'}} type='file'/>
+                            <Button size={'xs'} variant={'unstyled'} ms={5} color={'blue.400'} className='fw-bold' onClick={handleClick} >Select Picture</Button>
                             </div>
                         </div>
                         <div className='  mt-3 w-100' >

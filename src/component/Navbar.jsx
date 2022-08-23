@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, {useState,useRef} from 'react'
 import {
     chakra,
     Box,
@@ -44,8 +44,12 @@ const Navbar = () => {
     const dispatch=useDispatch()
     const toast = useToast()
 
-    const [img,setImg]=useState('')
+    const [img,setImg]=useState()
     const [caption,setCaption]=useState('')
+    const hiddenFileInput = useRef(null)
+
+
+    console.log(img)
 
     const{id,status,images}= useSelector((state)=>{
       return {
@@ -78,7 +82,7 @@ const Navbar = () => {
             isCloseable:true
           })
           setToggle(!toggle)
-          navigate('/profil')
+          window.location.reload()
         }
       })
       .catch((err)=>{
@@ -92,6 +96,20 @@ const Navbar = () => {
         })
       })
     }
+
+    const handleClick = event => {
+      hiddenFileInput.current.click();
+    };
+
+    const imgChange =((e)=>{
+      if (e.target.files && e.target.files.length > 0) {
+        setImg(e.target.files[0]);
+      }
+    })
+
+    const removeImg = () => {
+      setImg();
+    };
 
 
 
@@ -131,32 +149,53 @@ const Navbar = () => {
               status == 'Verified' &&
               <>
             <Button variant="ghost" onClick={()=>setToggle(!toggle)}><AiFillPlusCircle size={24}/></Button>
-            <Modal isOpen={toggle} onClose={()=>setToggle(!toggle)} size={'4xl'} >
+            <Modal isOpen={toggle} onClose={()=>setToggle(!toggle, setImg())} size={'xl'} >
               <ModalOverlay/>
               <ModalContent background={'whiteAlpha.800'}>
                 <ModalHeader>Add Your Image</ModalHeader>
                 <ModalCloseButton/>
                 <ModalBody>
                   <div className='row'>
-                    <div className='col-7'>
-                  <div className='d-flex justify-content-center'>
-                  <Image src={images} boxSize={'xs'} />
-                  </div>
-                  <Input variant={'flushed'} mt={3} onChange={(e)=>setImg(e.target.files[0])} type='file'/>
-                  <div className='d-flex justify-content-center'>
-                  </div>
+                    <div className=''>
+                  <div className=''>
+                    <div className='d-flex justify-content-center'>
                     </div>
-                    <div className='col-5 border-3 border-bottom-0 border-end-0 border-top-0 border-dark'>
-                      <Box border={'1px'}>
-                        <Textarea placeholder='Write Caption' onChange={(e)=>setCaption(e.target.value)} type='text' />
+                    <div className='d-flex justify-content-center'>
+                  <Image src={img ? URL.createObjectURL(img) : 'https://pertaniansehat.com/v01/wp-content/uploads/2015/08/default-placeholder.png' } 
+                  boxSize={'lg'}/>
+                  </div>
+                  {
+                    img&&
+                  <div className='d-flex justify-content-center'>
+                  <Button  colorScheme={'red'} onClick={removeImg} bg={'red.600'}>Remove</Button>
+                  </div>
+                  }
+                  </div>
+                  {!img &&
+                  <div className='d-flex justify-content-center'>
+                    <Input variant={'flushed'} mt={3} ref={hiddenFileInput} display={'none'} accept='image/*'onChange={imgChange} type='file'/>
+                    <Button onClick={handleClick} colorScheme={'telegram'}> Select Picture</Button>
+                  </div>
+                  
+                  }
+                    </div>
+                    <div className=''>
+                      <Box size={100}  >
+                        {
+                          img &&
+                          <Textarea placeholder='Write Caption' bg={'white'} resize={'none'} mt={10} maxH={'400px'}   border={'none'}  className='border-0' onChange={(e)=>setCaption(e.target.value)} type='text' />
+                        }
                       </Box>
                       </div>
                   </div>
                 </ModalBody>
                 <ModalFooter>
+                  {
+                    img &&
                   <Button colorScheme={'teal'} type='submit' onClick={submitPosting}>
                     Submit
                   </Button>
+                  }
                 </ModalFooter>
               </ModalContent>
             </Modal>

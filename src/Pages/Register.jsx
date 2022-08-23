@@ -48,7 +48,7 @@ const Register = () => {
                 .then((res)=>{
                     console.log('data token',res.data)
                     if(res.data.success){
-                        // navigate('/',{replace:true})
+                        navigate('/',{replace:true})
                         toast({
                             title:"Account created Silahkan Cek Email",
                             desctiption: `Welcome ${res.data.username}`,
@@ -80,7 +80,7 @@ const Register = () => {
   return (
       <div style={{backgroundColor:'#F6F7F9', height:'100vh'}}>
         <div className=' d-flex justify-content-center pt-3'>
-            <Box backgroundColor={'whiteAlpha.600'} shadow={'xl'} border={'1px'}>
+            <Box backgroundColor={'whiteAlpha.600'} shadow={'xl'}>
                 <Text textAlign={'center'} color={'blackAlpha.800'} fontSize={50} fontStyle={'unset'} py={5}  onClick={()=>navigate('/')} >GUILD</Text>
                 <Text className='text-secondary' textAlign={'center'} fontSize={'1xl'} mx={10} pb={5} >Sign Up To Explore With Your Community</Text>
                 <Stack spacing={3} className="d-flex align-items-center" >
@@ -111,7 +111,7 @@ const Register = () => {
                 </div>
                 <div className='mb-5 d-flex justify-content-center'>
                 <Text textAlign={'center'}  textColor={'gray.400'} fontSize={'sm'}  >HAVE AN ACCOUNT ?</Text>
-                <Text textAlign={'center'} textColor={'blue.400'} fontSize={'sm'} onClick={()=>navigate('/login')}> LOGIN</Text>
+                <Text textAlign={'center'} textColor={'blue.400'} fontSize={'sm'} onClick={()=>navigate('/')}> LOGIN</Text>
                 </div>
             </Box>
         </div>

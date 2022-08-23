@@ -6,7 +6,7 @@ import Navbar from '../component/Navbar';
 import {useSelector, useDispatch} from 'react-redux'
 import {GoUnverified} from 'react-icons/go'
 import { logoutAction } from '../action/useraction';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate,} from 'react-router-dom';
 import { AiFillLike,AiFillDislike,AiOutlineLike} from "react-icons/ai";
 
 
@@ -17,7 +17,7 @@ const Homepage = () => {
   const navigate = useNavigate()
   const dispatch = useDispatch()
   const toast = useToast()
-  const params = useParams()
+
 
   const {id,fullname,username,images,status,likes} = useSelector((state)=>{
     return{
