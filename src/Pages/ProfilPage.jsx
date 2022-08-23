@@ -61,7 +61,9 @@ const ProfilPage = () => {
                 status: 'success',
                 duration: 2000,
                 isCloseable: true,
-            })        
+            })
+            setToggle(!toggle)
+            // navigate('/profile')        
         })
         .catch((err)=>{
             toast({

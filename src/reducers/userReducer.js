@@ -29,6 +29,8 @@ export const userReducer=(state=INITIAL_STATE,action)=>{
             //state akan di concade dengan action pilot u/ mendptkan data terbaru
             console.log(action.payload)
             return{...state, ...action.payload}
+        case "UPDATE_PROFILE":
+            return {...state, ...action.payload}
         case "LOGOUT_SUCCESS":
             return INITIAL_STATE
         default:

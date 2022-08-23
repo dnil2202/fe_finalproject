@@ -39,3 +39,10 @@ export const logoutAction=()=>{
         type:'LOGOUT_SUCCESS'
     }
 }
+
+export const UpdateProfile = (data) =>{
+    return {
+        type : 'UPDATE_PROFILE',
+        payload :data
+    }
+}

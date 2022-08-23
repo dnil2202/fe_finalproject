@@ -78,6 +78,7 @@ const Navbar = () => {
             isCloseable:true
           })
           setToggle(!toggle)
+          navigate('/profil')
         }
       })
       .catch((err)=>{

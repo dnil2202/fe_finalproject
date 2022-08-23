@@ -2,18 +2,21 @@ import { Avatar, Button, Container, Input, Stack , Text, Textarea, useToast} fro
 import React, { useState, useEffect } from 'react'
 import Navbar from '../component/Navbar'
 import { useNavigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useSelector,useDispatch } from 'react-redux';
 import axios from 'axios';
 import { API_URL } from '../helper';
+import { UpdateProfile } from '../action/useraction';
 
 const EditProfil = () => {
     const navigate = useNavigate()
     const toast = useToast()
+    const dispatch = useDispatch()
 
     const [newFullname,setNewFullName]=useState('')
     const [newUsername,setNewUserName]=useState('')
-    const [newBio,setNewBio]=useState('')
+    const [newBio,setNewBio]=useState(' ')
     const [addAvatar,setAddAvatar]=useState('')
+
     
 
 
@@ -48,8 +51,10 @@ const EditProfil = () => {
             }))
             formData.append('images',addAvatar)
         }
-        axios.patch(API_URL+`/auth/all/${id}`,formData).then((res)=>{
-            if(res.data.success){
+        axios.patch(API_URL+`/auth/all/${id}`,formData)
+        .then((res)=>{
+            if(res.data.idusers){
+                dispatch(UpdateProfile(res.data))
                 toast({
                   title:'Update Data Success',
                   status:'success',
@@ -69,7 +74,7 @@ const EditProfil = () => {
         })
     } 
 
-   
+
   return (
     <div>
         <Navbar/>
@@ -82,7 +87,7 @@ const EditProfil = () => {
                     </div>
                     <div className='col-8'>
                         <div className='d-flex mx-5 mt-3 '>
-                            <Avatar size={'sm'} src={API_URL+images}></Avatar>
+                            <Avatar size={'sm'} src={API_URL+images} ></Avatar>
                             <div>
                             <Text fontSize={'sm'} ms={5}>{fullname}</Text>
                             <Input variant={'flushed'} size={'xs'} onChange={(e)=>setAddAvatar(e.target.files[0])} type='file'/>
