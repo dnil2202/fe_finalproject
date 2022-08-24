@@ -1,23 +1,68 @@
-import React, {useState} from 'react'
+import React, {useState,useEffect} from 'react'
 import Navbar from '../component/Navbar'
-import { useLocation } from 'react-router-dom' 
-import { Avatar, Box, Button, Container, Divider, useToast, Text, Image, Textarea } from '@chakra-ui/react'
+import { useLocation,useNavigate } from 'react-router-dom' 
+import { Avatar, 
+  Box, 
+  Button, 
+  Container, 
+  Divider, 
+  useToast, 
+  Text, 
+  Image, 
+  Textarea,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalCloseButton,
+  ModalBody,
+  ModalFooter,
+  Input,
+  MenuButton,
+  MenuList,
+  MenuItem,
+  Menu,
+} from '@chakra-ui/react'
 import { API_URL } from '../helper'
 import axios from 'axios'
 import { useSelector } from 'react-redux'
+import { AiOutlineMenu } from 'react-icons/ai'
 
 const PostingDetail = () => {
-  const {state} = useLocation()
+  const {state,search} = useLocation()
   const toast = useToast()
-  console.log(state)
+  const[toggleEdit,setToggleEdit]=useState(false)
+  const[updateCaption, SetUpdateCaption]=useState(' ')
+  const navigate = useNavigate()
 
   const [addComment, setAddComment]=useState('')
-
-  const {id}= useSelector((state)=>{
+  const [detail, setDetail] = useState('');
+  const [fetchStatus,setFetchStatus]=useState(true)
+  
+  const {id,username}= useSelector((state)=>{
     return{
       id : state.userReducer.idusers,
+      username : state.userReducer.username,
     }
   })
+
+  console.log(state.idposting)
+
+
+
+React.useEffect(()=>{
+  if(fetchStatus){
+    axios.get(API_URL + `/posting/${state.idposting}?page=1&pageSize=4`)
+    .then((res) => {
+      console.log(res.data[0])
+        setDetail(res.data[0])
+    }).catch((err) => {
+        console.log(err);
+    })
+    setFetchStatus(false)
+  }
+},[fetchStatus,setFetchStatus]);
+  
 
   const submitComment =(e)=>{
     let idPosting = parseInt(e.target.value)
@@ -27,6 +72,7 @@ const PostingDetail = () => {
       posting_id:state.idposting
     }).then((res)=>{
       if(res.data.success){
+        setFetchStatus(true)
         setAddComment('')
         toast({
           title: "Comment Submited",
@@ -46,34 +92,113 @@ const PostingDetail = () => {
       })
     })
   }
+
+
+const updatePosting =()=>{
+    axios.patch(API_URL+`/posting/${state.idposting}`,{
+        caption:updateCaption.length>0?updateCaption:state.caption
+    })
+    .then((res)=>{
+        if(res.data.success){
+          setFetchStatus(true)
+            toast({
+                title:"Updated Caption",
+                desctiption: "Updated Caption",
+                status:"success",
+                duration:5000,
+                isClosable:true
+            })
+            setToggleEdit(!toggleEdit)
+        }
+    }).catch((err)=>{
+        toast({
+            title:`${err}`,
+            desctiption: 'eror',
+            status:"warning",
+            duration:3000,
+            isClosable:true
+        })
+    })
+    
+}
+
+const deletePosting = ()=>{
+  axios.delete(API_URL+`/posting/${state.idposting}`)
+  .then((res)=>{
+      toast({
+          title: 'Your posting has deleted',
+          description: `success delete`,
+          status: 'success',
+          duration: 2000,
+          isCloseable: true,
+      })
+      navigate('/home')        
+  })
+  .catch((err)=>{
+      toast({
+          title: 'Error Deleted',
+          description: err.message,
+          status: 'error',
+          duration: 2000,
+          isClosable: true,
+      });
+  })
+}
+
+
+
+  
   
   return (
       <div>
         <Navbar/>
         <div style={{backgroundColor:'#F6F7F9', paddingTop:'80px', height:'100vh'}}>
-            <Container  maxW={'3xl'} >
-              <Box >
-              <div className='row'>
+            <Container  maxW={'4xl'} >
+              <div className='' >
+              <div className='row shadow'>
                 <div className='col-7'>
                   <div>
-                  <Image src={API_URL+state.images} style={{height:'50vh'}}/>
+                  <Image boxSize={'lg'} ms={5}  src={API_URL+detail.images} />
                   </div>
                 </div>
-                <div className='col-5 card'>
-                  <div className='d-flex mt-3'>
-                    <div>
+                <Box className='col-5 card'>
+                  <div className='d-flex justify-content-between'>
+                    <div className='d-flex mt-3'>
                   <Avatar size={'sm'}  src={API_URL+state.avatar}/>
+                  <Text fontFamily={'serif'} fontSize={'sm'} mt={1} ms={2}>{detail.user_name_post}</Text>
                     </div>
-                  <Text fontFamily={'serif'} fontSize={'sm'} mt={1} ms={2}>{state.user_name_post}</Text>
+                    {
+                      username === state.user_name_post &&
+                      <div>
+                        <Menu>
+                        <MenuButton>
+                            <AiOutlineMenu className='mt-4'/>
+                        </MenuButton>
+                        <MenuList width={'fit-content'}>
+                          <MenuItem onClick={()=>setToggleEdit(!toggleEdit)}>Edit Caption</MenuItem>
+                          <MenuItem onClick={deletePosting}>Delete</MenuItem>
+                        </MenuList>
+                        </Menu>
+                      </div>
+                
+                    }
                   </div>
                   <Divider mt={3}/>
                   <div>
-                    <Text fontFamily={'serif'} fontSize={'md'}>{state.caption}</Text>
+                    {toggleEdit ?
+                     <div>
+                     <Textarea onChange={(e)=>SetUpdateCaption(e.target.value)}  defaultValue={detail.caption} size={''} />
+                     <Button size={'sm'} onClick={updatePosting} me={5} variant={'unstyled'} >Ok</Button>
+                     <Button size={'sm'} variant={'unstyled'} onClick={()=>setToggleEdit(!toggleEdit)}>Cancel</Button>
+                 </div>
+                 :
+                    <Text fontFamily={'serif'} fontSize={'md'}>{detail.caption}</Text>
+                    }
                     <Text fontSize={'xs'} className='text-muted'>{state.add_date.split('').splice(0,10).join('')}</Text>
                     <div className='my-4'>
                     {
-              state.comment &&
-              state.comment.map((v)=>{
+              detail.comment &&
+              detail.comment.map((v)=>{
                 return  (
                 <div className='my-2'>
                 <Text as={'sup'} className='fw-bold me-2'>{v.user_name_comment}</Text>
@@ -95,13 +220,13 @@ const PostingDetail = () => {
           <Divider color={'gray.100'}/>
           <div className='d-flex card-footer bg-white'>
             <Textarea size={'sm'} placeholder='Add Comment' variant={'unstyled'} onChange={(e)=>setAddComment(e.target.value)} value={addComment} />
-            <Button variant={'ghost'} size={'xs'} mt={10} textColor={'blue'} value={state.idposting} onClick={submitComment} >POST</Button>
+            <Button variant={'ghost'} size={'xs'} mt={10} textColor={'blue'} value={detail.idposting} onClick={submitComment} >POST</Button>
           </div>
           </div>
                   </div>
-                </div>
+                </Box>
               </div>
-              </Box>
+              </div>
             </Container>
         </div>
 

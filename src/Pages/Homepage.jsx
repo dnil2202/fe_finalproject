@@ -1,5 +1,14 @@
-import React, { useEffect, useState } from 'react';
-import { Box,Text,Avatar,useToast, List, ListItem, Button, Input, Divider, Container } from '@chakra-ui/react';
+import React, { useEffect, useState, useRef } from 'react';
+import { Box,Text,Avatar,useToast, List, ListItem, Button, Input, Divider, Container, Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalCloseButton,
+  ModalBody,
+  Image,
+  ModalFooter,
+  Textarea
+} from '@chakra-ui/react';
 import axios from 'axios'
 import { API_URL } from '../helper';
 import Navbar from '../component/Navbar';
@@ -8,6 +17,7 @@ import {GoUnverified} from 'react-icons/go'
 import { logoutAction } from '../action/useraction';
 import { useNavigate,} from 'react-router-dom';
 import { AiFillLike,AiFillDislike,AiOutlineLike} from "react-icons/ai";
+import InfiniteScroll from 'react-infinite-scroll-component';
 
 
 const Homepage = () => {
@@ -17,7 +27,15 @@ const Homepage = () => {
   const navigate = useNavigate()
   const dispatch = useDispatch()
   const toast = useToast()
+  const [fetchStatus, setFetchStatus]=useState(true)
+  // state posting
+  const [img,setImg]=useState()
+  const [caption,setCaption]=useState('')
+  const hiddenFileInput = useRef(null)
+  const [toggle, setToggle]=useState(false)
+  const [pages,setPages]=useState(1)
 
+  console.log(pages)
 
   const {id,fullname,username,images,status,likes} = useSelector((state)=>{
     return{
@@ -30,19 +48,30 @@ const Homepage = () => {
     }
   })
 
+  console.log(dataPosting.length)
 
-  const getData =()=>{
-    axios.get(API_URL+'/posting')
-    .then((res)=>{
-      setDataPosting(res.data)
-    }).catch((err)=>{
-      console.log(err)
-    })
-  }
 
-  React.useEffect(() => {
-    getData();
-}, []);
+
+
+  useEffect(() => {
+    if(fetchStatus){
+
+      axios.get(API_URL+`/posting?page=${pages}&pageSize=10`)
+      .then((res)=>{
+        const newPost = res.data
+        setDataPosting([...dataPosting,...newPost])
+      }).catch((err)=>{
+        console.log(err)
+      })
+      setFetchStatus(false)
+    }
+}, [fetchStatus,setFetchStatus]);
+
+const fetchMoreData  =(()=>{
+  setPages(pages+1)
+  setFetchStatus(true)
+
+})
 
 const submitComment =(e)=>{
   let idPosting = parseInt(e.target.value)
@@ -52,6 +81,7 @@ const submitComment =(e)=>{
     posting_id:idPosting
   }).then((res)=>{
     if(res.data.success){
+      setFetchStatus(true)
       setAddComment('')
       toast({
         title: "Comment Submited",
@@ -72,13 +102,15 @@ const submitComment =(e)=>{
   })
 }
 
-const submitLike =(e)=>{
-  let idLike = parseInt(e.target.value)
+const submitLike =(idposting)=>{
+  console.log(idposting)
+  let idLike = parseInt(idposting)
   console.log(idLike)
     axios.post(API_URL+'/like',{
       postId:idLike,
       userId:id,
     }).then((res)=>{
+      setFetchStatus(true)
       setAddLike(true)
       console.log(res.data)
     }).catch((err)=>{
@@ -86,12 +118,56 @@ const submitLike =(e)=>{
     })
 }
 
+// Post posting
 
+const submitPosting = ()=>{
+  let formData = new FormData();
+  formData.append('data',JSON.stringify({
+    caption,
+    users_id:id
+  }))
+  formData.append('images',img)
+  axios.post(API_URL+`/posting`,formData).then((res)=>{
+    if(res.data.success){
+      toast({
+        title:'Posting Submited',
+        status:'success',
+        duration: 2000,
+        isCloseable:true
+      })
+      setFetchStatus(true)
+      setToggle(!toggle)
+    }
+  })
+  .catch((err)=>{
+    console.log(err)
+    toast({
+      title: 'Error submitted',
+      description: err.message,
+      status: 'error',
+      duration: 2000,
+      isClosable: true,
+    })
+  })
+}
+
+const handleClick = event => {
+  hiddenFileInput.current.click();
+};
+
+const imgChange =((e)=>{
+  if (e.target.files && e.target.files.length > 0) {
+    setImg(e.target.files[0]);
+  }
+})
+
+const removeImg = () => {
+  setImg();
+};
 
 
   const printData=()=>{
     return dataPosting.map((val,idx)=>{
-      // console.log(val)
       return(
         <div className='col-lg-12' key={val.idposting}>
         <div className='card w-100 h-100 mb-3'>
@@ -103,9 +179,9 @@ const submitLike =(e)=>{
           <img  src={API_URL+ val.images} className='card-img-top w-100' style={{height:'300px'}} />
           <div className='card-body'>
             <div>
-          <Button size={'xs'} border={'none'} bgColor={'white'} variant={'unstyled'} value={val.idposting} onClick={submitLike}>
+          <Button size={'xs'} border={'none'} bgColor={'white'} variant={'unstyled'}  onClick={()=>submitLike(val.idposting)}>
             {
-             addLike ? 'Unlike' : 'Like' 
+             addLike ? <AiOutlineLike/> : <AiFillLike/> 
             }
             </Button>
             </div>
@@ -142,6 +218,7 @@ const submitLike =(e)=>{
           </div>
         </div>
         </div>
+       
       )
     })
   }
@@ -168,14 +245,27 @@ const submitLike =(e)=>{
           </>
           :(
             <>
-        <Navbar/>
+        <Navbar
+          onClickOpenModal={()=>{
+            setToggle(true)
+          }}
+        />
       <div style={{backgroundColor:'#F6F7F9', paddingTop:'20px'}}>
       <div className='container ' >
         <div className='row'>
           <div className='col-4 d-md-block d-none'>
           </div>
           <div className='col-lg-4 col-md-6 col-sm-6 col-xs-6 align-item-center' >
+            <div>
+          <InfiniteScroll
+        dataLength={dataPosting.length}
+        next={fetchMoreData}
+        hasMore={true}
+        loader={<h4>Loading...</h4>}
+        >
             {printData()}
+            </InfiniteScroll>
+            </div>
           </div>
           <div className='col-lg-4 col-md-6 col-sm-6 col-xs-6'>
             <div className='d-flex'>
@@ -191,6 +281,57 @@ const submitLike =(e)=>{
       </div>
       </>
     )}
+    {/* MODAL POST POSTING */}
+     <Modal isOpen={toggle} onClose={()=>setToggle(!toggle, setImg())} size={'xl'} >
+          <ModalOverlay/>
+          <ModalContent background={'whiteAlpha.800'}>
+            <ModalHeader>Add Your Image</ModalHeader>
+            <ModalCloseButton/>
+            <ModalBody>
+              <div className='row'>
+                <div className=''>
+              <div className=''>
+                <div className='d-flex justify-content-center'>
+                </div>
+                <div className='d-flex justify-content-center'>
+              <Image src={img ? URL.createObjectURL(img) : 'https://pertaniansehat.com/v01/wp-content/uploads/2015/08/default-placeholder.png' } 
+              boxSize={'lg'}/>
+              </div>
+              {
+                img&&
+              <div className='d-flex justify-content-center'>
+              <Button  colorScheme={'red'} onClick={removeImg} bg={'red.600'}>Remove</Button>
+              </div>
+              }
+              </div>
+              {!img &&
+              <div className='d-flex justify-content-center'>
+                <Input variant={'flushed'} mt={3} ref={hiddenFileInput} display={'none'} accept='image/*'onChange={imgChange} type='file'/>
+                <Button onClick={handleClick} colorScheme={'telegram'}> Select Picture</Button>
+              </div>
+              
+              }
+                </div>
+                <div className=''>
+                  <Box size={100}  >
+                    {
+                      img &&
+                      <Textarea placeholder='Write Caption' bg={'white'} resize={'none'} mt={10} maxH={'400px'}   border={'none'}  className='border-0' onChange={(e)=>setCaption(e.target.value)} type='text' />
+                    }
+                  </Box>
+                  </div>
+              </div>
+            </ModalBody>
+            <ModalFooter>
+              {
+                img &&
+              <Button colorScheme={'teal'} type='submit' onClick={submitPosting}>
+                Submit
+              </Button>
+              }
+            </ModalFooter>
+          </ModalContent>
+        </Modal>
       </div>
     )
 };
