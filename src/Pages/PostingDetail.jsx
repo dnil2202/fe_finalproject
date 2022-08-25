@@ -38,6 +38,9 @@ const PostingDetail = () => {
   const [addComment, setAddComment]=useState('')
   const [detail, setDetail] = useState('');
   const [fetchStatus,setFetchStatus]=useState(true)
+
+  const [limit,setLimit]=useState(5)
+  const [more,setMore]=useState(true)
   
   const {id,username}= useSelector((state)=>{
     return{
@@ -47,14 +50,17 @@ const PostingDetail = () => {
   })
 
   console.log(state.idposting)
+  console.log(detail.comment)
+
+  console.log(more)
 
 
 
-React.useEffect(()=>{
+useEffect(()=>{
   if(fetchStatus){
-    axios.get(API_URL + `/posting/${state.idposting}?page=1&pageSize=4`)
+    axios.get(API_URL + `/posting/${state.idposting}?page=1&pageSize=${limit}`)
     .then((res) => {
-      console.log(res.data[0])
+     setMore(res.data[0].comment.length === limit ? true: false)
         setDetail(res.data[0])
     }).catch((err) => {
         console.log(err);
@@ -145,6 +151,11 @@ const deletePosting = ()=>{
   })
 }
 
+const getMoreComment = () => {
+  setLimit(prev=> prev + 5)
+  setFetchStatus(true)
+}
+
 
 
   
@@ -200,12 +211,17 @@ const deletePosting = ()=>{
               detail.comment &&
               detail.comment.map((v)=>{
                 return  (
-                <div className='my-2'>
+                <div className='mt-2'>
                 <Text as={'sup'} className='fw-bold me-2'>{v.user_name_comment}</Text>
                 <Text as={'sup'} className='text-muted'>{v.comment}</Text>
                 </div>
                 )
               })
+            }{
+              more ?
+              <Button variant={'none'} size={'xs'} onClick={getMoreComment} className='text-muted fw-bold' >see more comment</Button>
+              :
+              ''
             }
                     </div>
                     <Divider color={'gray.100'}/>

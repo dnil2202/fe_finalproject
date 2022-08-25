@@ -27,15 +27,15 @@ const Homepage = () => {
   const navigate = useNavigate()
   const dispatch = useDispatch()
   const toast = useToast()
-  const [fetchStatus, setFetchStatus]=useState(true)
+  const [fetchStatus, setFetchStatus]=useState(false)
   // state posting
   const [img,setImg]=useState()
   const [caption,setCaption]=useState('')
   const hiddenFileInput = useRef(null)
   const [toggle, setToggle]=useState(false)
-  const [pages,setPages]=useState(1)
+  // pagination 
+  const [page, setPage] = useState(1)
 
-  console.log(pages)
 
   const {id,fullname,username,images,status,likes} = useSelector((state)=>{
     return{
@@ -48,30 +48,39 @@ const Homepage = () => {
     }
   })
 
-  console.log(dataPosting.length)
-
-
-
+  console.log(dataPosting)
 
   useEffect(() => {
-    if(fetchStatus){
-
-      axios.get(API_URL+`/posting?page=${pages}&pageSize=10`)
+      axios.get(API_URL+`/posting?page=${page}&pageSize=5`)
       .then((res)=>{
-        const newPost = res.data
-        setDataPosting([...dataPosting,...newPost])
+        if(res.data.length > 0 ){
+          const newPost = res.data
+          setDataPosting([...dataPosting,...newPost])
+        }else{
+          setPage(1)
+          
+        }
       }).catch((err)=>{
         console.log(err)
       })
-      setFetchStatus(false)
-    }
-}, [fetchStatus,setFetchStatus]);
+}, [page]);
 
-const fetchMoreData  =(()=>{
-  setPages(pages+1)
-  setFetchStatus(true)
+useEffect(()=>{
+  if(fetchStatus){
+    axios.get(API_URL+`/posting?page=1&pageSize=5`)
+    .then((res)=>{
+        setDataPosting(res.data)
+        setPage(1)
+    }).catch((err)=>{
+      console.log(err)
+    })
+    setFetchStatus(false)
+  }
+}, [fetchStatus])
 
-})
+const getMoreData = () => {
+  setPage(prev=> prev + 1)
+}
 
 const submitComment =(e)=>{
   let idPosting = parseInt(e.target.value)
@@ -169,7 +178,7 @@ const removeImg = () => {
   const printData=()=>{
     return dataPosting.map((val,idx)=>{
       return(
-        <div className='col-lg-12' key={val.idposting}>
+        <div className='col-lg-12' key={idx}>
         <div className='card w-100 h-100 mb-3'>
           <div className='d-flex mx-2 my-2'>
           <Avatar size={'sm'} src={API_URL+val.avatar}>
@@ -259,7 +268,7 @@ const removeImg = () => {
             <div>
           <InfiniteScroll
         dataLength={dataPosting.length}
-        next={fetchMoreData}
+        next={getMoreData}
         hasMore={true}
         loader={<h4>Loading...</h4>}
         >
