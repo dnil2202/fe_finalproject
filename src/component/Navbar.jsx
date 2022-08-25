@@ -17,6 +17,7 @@ import {
     MenuItem,
     Container,
     useToast,
+    Divider,
   } from "@chakra-ui/react";
   import { AiOutlineMenu, AiFillHome, AiFillMessage,AiFillPlusCircle,AiFillHeart} from "react-icons/ai";
   import { useNavigate } from 'react-router-dom';
@@ -54,7 +55,6 @@ const Navbar = (props) => {
 
   return (
     <Container>
-    <React.Fragment>
       <Flex alignItems="center" justifyContent="space-around" mx="auto">
         <Flex>
           <chakra.h1 fontSize="xl" fontStyle={'oblique'} fontWeight="bold" me={'40'} >
@@ -63,11 +63,7 @@ const Navbar = (props) => {
         </Flex>
         <HStack display="flex" alignItems="center" spacing={1}>
         <Input placeholder='search' width={'250px'} size={'sm'} rounded={'3xl'}  />
-          <HStack
-            spacing={1}
-            color="brand.500"
-            display={{ base: "none", md: "inline-flex" }}
-          >
+          <HStack>
             <Button variant="ghost" onClick={()=>navigate('/home')}><AiFillHome size={24}/></Button>
             {/* <Button variant="ghost" ><AiFillMessage size={24}/></Button> */}
             {
@@ -88,14 +84,13 @@ const Navbar = (props) => {
               <MenuList width={'fit-content'} >
                 <MenuItem onClick={()=>navigate(`/profil/`)}>Profile</MenuItem>
                 <MenuItem>Setting</MenuItem>
-                <hr/>
+                <Divider/>
                 <MenuItem onClick={onLogout}>Logout</MenuItem>
               </MenuList>
             </Menu>
           </HStack>
         </HStack>
       </Flex>
-  </React.Fragment>
             </Container>
   )
     

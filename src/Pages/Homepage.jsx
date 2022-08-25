@@ -50,7 +50,9 @@ const Homepage = () => {
 
   console.log(dataPosting)
 
+
   useEffect(() => {
+    setTimeout(()=>{
       axios.get(API_URL+`/posting?page=${page}&pageSize=5`)
       .then((res)=>{
         if(res.data.length > 0 ){
@@ -63,23 +65,27 @@ const Homepage = () => {
       }).catch((err)=>{
         console.log(err)
       })
+
+    },2000)
 }, [page]);
 
 useEffect(()=>{
   if(fetchStatus){
-    axios.get(API_URL+`/posting?page=1&pageSize=5`)
-    .then((res)=>{
-        setDataPosting(res.data)
-        setPage(1)
-    }).catch((err)=>{
-      console.log(err)
-    })
-    setFetchStatus(false)
+      axios.get(API_URL+`/posting?page=1&pageSize=5`)
+      .then((res)=>{
+          setDataPosting(res.data)
+          setPage(1)
+      }).catch((err)=>{
+        console.log(err)
+      })
+      setFetchStatus(false)
+      
+
   }
 }, [fetchStatus])
 
 const getMoreData = () => {
-  setPage(prev=> prev + 1)
+    setPage(prev=> prev + 1)
 }
 
 const submitComment =(e)=>{
@@ -188,18 +194,28 @@ const removeImg = () => {
           <img  src={API_URL+ val.images} className='card-img-top w-100' style={{height:'300px'}} />
           <div className='card-body'>
             <div>
-          <Button size={'xs'} border={'none'} bgColor={'white'} variant={'unstyled'}  onClick={()=>submitLike(val.idposting)}>
-            {
-             addLike ? <AiOutlineLike/> : <AiFillLike/> 
-            }
-            </Button>
+             
             </div>
             <div>
             {val.likes ?
             <Text as={'sup'} className='fw-bold' >{val.likes.length} Likes</Text>
             :
             <Text as={'sup'} className='fw-bold' >0 Likes</Text>
-          }
+            }
+             {/* {
+                val.likes &&
+                val.likes.map(v=>{
+                  if(v.idusers === id){
+                    return(
+                      <div>Like</div>
+                    )
+                  }else{
+                    return(
+                      <div>Unlike</div>
+                    )
+                  }
+                })
+              } */}
           </div>
             <p className='card-title'>{val.caption}</p>
             <Button variant={'unstyled'} size={'xs'} className='text-muted' onClick={()=> navigate(`/p/${val.idposting}`,{

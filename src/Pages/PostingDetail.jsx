@@ -60,7 +60,9 @@ useEffect(()=>{
   if(fetchStatus){
     axios.get(API_URL + `/posting/${state.idposting}?page=1&pageSize=${limit}`)
     .then((res) => {
-     setMore(res.data[0].comment.length === limit ? true: false)
+      if(res.data[0].comment){
+        setMore(res.data[0].comment.length === limit ? true: false)
+      }
         setDetail(res.data[0])
     }).catch((err) => {
         console.log(err);
@@ -156,10 +158,6 @@ const getMoreComment = () => {
   setFetchStatus(true)
 }
 
-
-
-  
-  
   return (
       <div>
         <Navbar/>
@@ -206,7 +204,8 @@ const getMoreComment = () => {
                     <Text fontFamily={'serif'} fontSize={'md'}>{detail.caption}</Text>
                     }
                     <Text fontSize={'xs'} className='text-muted'>{state.add_date.split('').splice(0,10).join('')}</Text>
-                    <div className='my-4'>
+                    <Box className='overflow-auto' maxHeight={'200px'}>
+                    <div className='my-4 overflow-auto'>
                     {
               detail.comment &&
               detail.comment.map((v)=>{
@@ -224,6 +223,7 @@ const getMoreComment = () => {
               ''
             }
                     </div>
+                    </Box>
                     <Divider color={'gray.100'}/>
             <div>
             {state.likes ?
