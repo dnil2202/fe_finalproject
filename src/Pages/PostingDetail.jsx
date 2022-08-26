@@ -19,6 +19,7 @@ import { API_URL } from '../helper'
 import axios from 'axios'
 import { useSelector } from 'react-redux'
 import { AiOutlineMenu } from 'react-icons/ai'
+import { AiFillLike,AiOutlineLike} from "react-icons/ai";
 
 const PostingDetail = () => {
   const {state} = useLocation()
@@ -34,32 +35,35 @@ const PostingDetail = () => {
   const [limit,setLimit]=useState(5)
   const [more,setMore]=useState(true)
   
+  
   const {id,username}= useSelector((state)=>{
     return{
       id : state.userReducer.idusers,
       username : state.userReducer.username,
     }
   })
+console.log(state)
+console.log(detail.likes)
 
-  console.log(state.likes)
 
  
 useEffect(()=>{
   if(fetchStatus){
     axios.get(API_URL + `/posting/${state.idposting}?page=1&pageSize=${limit}`)
     .then((res) => {
+      setDetail(res.data[0])
       if(res.data[0].comment){
         setMore(res.data[0].comment.length === limit ? true: false)
       }else{
         setMore(false)
       }
-        setDetail(res.data[0])
+        
     }).catch((err) => {
         console.log(err);
     })
     setFetchStatus(false)
   }
-},[fetchStatus,setFetchStatus]);
+},[fetchStatus,state]);
   
 
   const submitComment =(e)=>{
@@ -90,7 +94,6 @@ useEffect(()=>{
       })
     })
   }
-
 
 const updatePosting =()=>{
     axios.patch(API_URL+`/posting/${state.idposting}`,{
@@ -148,6 +151,32 @@ const getMoreComment = () => {
   setFetchStatus(true)
 }
 
+const submitLike =(idposting)=>{
+  let idLike = parseInt(idposting)
+  console.log(idLike)
+    axios.post(API_URL+'/like',{
+      postId:idLike,
+      userId:id,
+    }).then((res)=>{
+      setFetchStatus(true)
+      console.log(res.data)
+    }).catch((err)=>{
+      console.log(err)
+    })
+}
+
+const deleteLike =(idLike)=>{
+    let id = parseInt(idLike)
+  axios.delete(API_URL+`/like/${id}`)
+  .then((res)=>{
+    console.log(res)
+    setFetchStatus(true)
+  }).catch((err)=>{
+    console.log(err)
+  })
+}
+
+let addLike
   return (
       <div>
         <Navbar/>
@@ -216,8 +245,31 @@ const getMoreComment = () => {
                     </Box>
                     <Divider color={'gray.100'}/>
             <div>
-            {state.likes ?
-            <Text as={'sup'} className='fw-bold' >{state.likes.length} Likes</Text>
+              {
+                detail.likes &&
+                detail.likes.map((v)=>{
+                  if(v.idusers === id){
+                    addLike = v
+                  }
+                })
+              }
+                {
+              addLike ? (
+            <Button variant={'unstyled'}  onClick={()=>{deleteLike(addLike.id)}} >
+              <AiFillLike/>
+            </Button> 
+              ) : (
+                <Button variant={'unstyled'}  onClick={()=>{submitLike(state.idposting)}} >
+              <AiOutlineLike/>
+            </Button>
+              )
+            }
+            </div>
+            <div>
+            {
+              detail.likes &&
+            detail.likes ?
+            <Text as={'sup'} className='fw-bold' >{detail.likes.length} Likes</Text>
             :
             <Text as={'sup'} className='fw-bold' >0 Likes</Text>
           }

@@ -17,7 +17,7 @@ import {useSelector, useDispatch} from 'react-redux'
 import {GoUnverified} from 'react-icons/go'
 import { logoutAction } from '../action/useraction';
 import { useNavigate,} from 'react-router-dom';
-import { AiFillLike,AiFillDislike,AiOutlineLike} from "react-icons/ai";
+import { AiFillLike,AiOutlineLike} from "react-icons/ai";
 import InfiniteScroll from 'react-infinite-scroll-component';
 
 
