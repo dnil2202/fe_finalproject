@@ -4,10 +4,8 @@ import {
     Box,
     Flex,
     useColorModeValue,
-    VisuallyHidden,
     HStack,
     Button,
-    useDisclosure,
     Text,
     Avatar,
     Input,
@@ -19,26 +17,22 @@ import {
     useToast,
     Divider,
   } from "@chakra-ui/react";
-  import { AiOutlineMenu, AiFillHome, AiFillMessage,AiFillPlusCircle,AiFillHeart} from "react-icons/ai";
+  import {AiFillHome,AiFillPlusCircle} from "react-icons/ai";
   import { useNavigate } from 'react-router-dom';
-  import images from '../image/image-1271454.png'
   import {useDispatch, useSelector} from 'react-redux'
 import { logoutAction } from '../action/useraction';
-import axios from 'axios';
 import { API_URL } from '../helper';
 
 const Navbar = (props) => {
   
-    const bg = useColorModeValue("white", "gray.800");
     const navigate = useNavigate()
     const dispatch=useDispatch()
-    const toast = useToast()
 
 
 
-    const{id,status,images}= useSelector((state)=>{
+    const{status,images,username}= useSelector((state)=>{
       return {
-          id:state.userReducer.idusers,
+          username:state.userReducer.username,
           status:state.userReducer.status,
           images:state.userReducer.images
           
@@ -49,9 +43,6 @@ const Navbar = (props) => {
       dispatch(logoutAction())
       navigate('/')
     }
-
-
-
 
   return (
     <Container>
@@ -77,7 +68,7 @@ const Navbar = (props) => {
             <Menu>
               <MenuButton>
                 <div className='d-flex'>
-                <Text as={'sup'} mt={5} me={2}textColor={status=='Unverified'?'red.400':'blue.600'} className='fw-bold'>{status}</Text>
+                <Text as={'sup'} mt={5} me={2}textColor={status=='Unverified'?'red.400':'blue.600'} className='fw-bold'>{username}</Text>
                 <Avatar size={'sm'} src={API_URL+images}></Avatar>
                 </div>
               </MenuButton>

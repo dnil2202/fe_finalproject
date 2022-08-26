@@ -7,7 +7,8 @@ import { Box,Text,Avatar,useToast, List, ListItem, Button, Input, Divider, Conta
   ModalBody,
   Image,
   ModalFooter,
-  Textarea
+  Textarea,
+  Spinner
 } from '@chakra-ui/react';
 import axios from 'axios'
 import { API_URL } from '../helper';
@@ -23,7 +24,6 @@ import InfiniteScroll from 'react-infinite-scroll-component';
 const Homepage = () => {
   const [dataPosting, setDataPosting]=useState([])
   const [addComment, setAddComment]=useState('')
-  const [addLike, setAddLike]=useState(false)
   const navigate = useNavigate()
   const dispatch = useDispatch()
   const toast = useToast()
@@ -48,7 +48,6 @@ const Homepage = () => {
     }
   })
 
-  console.log(dataPosting)
 
 
   useEffect(() => {
@@ -66,7 +65,7 @@ const Homepage = () => {
         console.log(err)
       })
 
-    },2000)
+    },500)
 }, [page]);
 
 useEffect(()=>{
@@ -117,8 +116,9 @@ const submitComment =(e)=>{
   })
 }
 
+
+
 const submitLike =(idposting)=>{
-  console.log(idposting)
   let idLike = parseInt(idposting)
   console.log(idLike)
     axios.post(API_URL+'/like',{
@@ -126,11 +126,21 @@ const submitLike =(idposting)=>{
       userId:id,
     }).then((res)=>{
       setFetchStatus(true)
-      setAddLike(true)
       console.log(res.data)
     }).catch((err)=>{
       console.log(err)
     })
+}
+
+const deleteLike =(idLike)=>{
+    let id = parseInt(idLike)
+  axios.delete(API_URL+`/like/${id}`)
+  .then((res)=>{
+    console.log(res)
+    setFetchStatus(true)
+  }).catch((err)=>{
+    console.log(err)
+  })
 }
 
 // Post posting
@@ -183,6 +193,7 @@ const removeImg = () => {
 
   const printData=()=>{
     return dataPosting.map((val,idx)=>{
+      let addLike
       return(
         <div className='col-lg-12' key={idx}>
         <div className='card w-100 h-100 mb-3'>
@@ -194,7 +205,24 @@ const removeImg = () => {
           <img  src={API_URL+ val.images} className='card-img-top w-100' style={{height:'300px'}} />
           <div className='card-body'>
             <div>
-             
+            {
+              val.likes.map(data=>{
+                if(data.idusers === id){
+                  addLike = data
+                }
+              })
+            }
+            {
+              addLike ? (
+            <Button variant={'unstyled'}  onClick={()=>{deleteLike(addLike.id)}} >
+              <AiFillLike/>
+            </Button> 
+              ) : (
+                <Button variant={'unstyled'}  onClick={()=>{submitLike(val.idposting)}} >
+              <AiOutlineLike/>
+            </Button>
+              )
+            }
             </div>
             <div>
             {val.likes ?
@@ -202,20 +230,6 @@ const removeImg = () => {
             :
             <Text as={'sup'} className='fw-bold' >0 Likes</Text>
             }
-             {/* {
-                val.likes &&
-                val.likes.map(v=>{
-                  if(v.idusers === id){
-                    return(
-                      <div>Like</div>
-                    )
-                  }else{
-                    return(
-                      <div>Unlike</div>
-                    )
-                  }
-                })
-              } */}
           </div>
             <p className='card-title'>{val.caption}</p>
             <Button variant={'unstyled'} size={'xs'} className='text-muted' onClick={()=> navigate(`/p/${val.idposting}`,{
@@ -238,7 +252,7 @@ const removeImg = () => {
           <Divider/>
           <div className='d-flex justify-content-between'>
           <Input size={'sm'} border={'none'} variant={'unstyled'} onChange={(e)=>setAddComment(e.target.value)} value={addComment} placeholder='Tambahkan Komentar anda'></Input>
-          <Button size={'xs'} border={'none'} bgColor={'white'} variant={'unstyled'} textColor={'blue'} value={val.idposting} onClick={submitComment}  >Post</Button>
+          <Button size={'xs'} border={'none'} bgColor={'white'} variant={'unstyled'} textColor={'blue'} value={val.idposting} onClick={submitComment}>Post</Button>
           </div>
           </div>
         </div>
@@ -247,7 +261,6 @@ const removeImg = () => {
       )
     })
   }
-
     return (
       <div >
         {
@@ -286,7 +299,17 @@ const removeImg = () => {
         dataLength={dataPosting.length}
         next={getMoreData}
         hasMore={true}
-        loader={<h4>Loading...</h4>}
+        loader={
+          <div className='d-flex justify-content-center'>
+            <Spinner 
+             thickness={'4px'}
+             speed={'0.65s'}
+             emptyColor={'gray.200'}
+             color={'blue.500'}
+             size={'xl'}
+            />
+          </div>
+      }
         >
             {printData()}
             </InfiniteScroll>

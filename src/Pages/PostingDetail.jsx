@@ -10,14 +10,6 @@ import { Avatar,
   Text, 
   Image, 
   Textarea,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalCloseButton,
-  ModalBody,
-  ModalFooter,
-  Input,
   MenuButton,
   MenuList,
   MenuItem,
@@ -29,7 +21,7 @@ import { useSelector } from 'react-redux'
 import { AiOutlineMenu } from 'react-icons/ai'
 
 const PostingDetail = () => {
-  const {state,search} = useLocation()
+  const {state} = useLocation()
   const toast = useToast()
   const[toggleEdit,setToggleEdit]=useState(false)
   const[updateCaption, SetUpdateCaption]=useState(' ')
@@ -49,19 +41,17 @@ const PostingDetail = () => {
     }
   })
 
-  console.log(state.idposting)
-  console.log(detail.comment)
+  console.log(state.likes)
 
-  console.log(more)
-
-
-
+ 
 useEffect(()=>{
   if(fetchStatus){
     axios.get(API_URL + `/posting/${state.idposting}?page=1&pageSize=${limit}`)
     .then((res) => {
       if(res.data[0].comment){
         setMore(res.data[0].comment.length === limit ? true: false)
+      }else{
+        setMore(false)
       }
         setDetail(res.data[0])
     }).catch((err) => {
@@ -133,14 +123,14 @@ const updatePosting =()=>{
 const deletePosting = ()=>{
   axios.delete(API_URL+`/posting/${state.idposting}`)
   .then((res)=>{
+    navigate('/home')        
       toast({
           title: 'Your posting has deleted',
           description: `success delete`,
           status: 'success',
-          duration: 2000,
+          duration: 3000,
           isCloseable: true,
       })
-      navigate('/home')        
   })
   .catch((err)=>{
       toast({
@@ -163,11 +153,11 @@ const getMoreComment = () => {
         <Navbar/>
         <div style={{backgroundColor:'#F6F7F9', paddingTop:'80px', height:'100vh'}}>
             <Container  maxW={'4xl'} >
-              <div className='' >
+              <div>
               <div className='row shadow'>
-                <div className='col-7'>
+                <div className='col-7' >
                   <div>
-                  <Image boxSize={'lg'} ms={5}  src={API_URL+detail.images} />
+                  <Image boxSize={'lg'} ms={3}  src={API_URL+detail.images} />
                   </div>
                 </div>
                 <Box className='col-5 card'>
@@ -203,7 +193,7 @@ const getMoreComment = () => {
                  :
                     <Text fontFamily={'serif'} fontSize={'md'}>{detail.caption}</Text>
                     }
-                    <Text fontSize={'xs'} className='text-muted'>{state.add_date.split('').splice(0,10).join('')}</Text>
+                    <Text fontSize={'xs'} className='text-muted mb-4'>{state.add_date.split('').splice(0,10).join('')}</Text>
                     <Box className='overflow-auto' maxHeight={'200px'}>
                     <div className='my-4 overflow-auto'>
                     {
@@ -217,7 +207,7 @@ const getMoreComment = () => {
                 )
               })
             }{
-              more ?
+              more ? 
               <Button variant={'none'} size={'xs'} onClick={getMoreComment} className='text-muted fw-bold' >see more comment</Button>
               :
               ''
