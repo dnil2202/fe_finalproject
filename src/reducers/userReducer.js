@@ -13,7 +13,7 @@ const INITIAL_STATE={
     status_id:null,
     images:'',
     posting:[],
-    likes:[]
+    likes:[],
 }
 
 // argumen action untuk membawa data yg kita simpan,dan membawa kata kunci tempat

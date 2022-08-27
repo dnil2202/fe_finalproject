@@ -1,111 +1,83 @@
 import { Avatar, Box, Button, Container,Text, Image, Stack,
-    Modal,
+    useToast,
+    Tabs,
+    TabList,
+    Tab,
+    TabPanels,
+    TabPanel,
     ModalOverlay,
     ModalContent,
     ModalHeader,
     ModalCloseButton,
     ModalBody,
     ModalFooter,
-    Input,
-    MenuButton,
-    MenuList,
-    MenuItem,
-    Menu,
-    useToast,
-    Editable,
-    Textarea
+    Modal,
+    Textarea,
+    Input
 } from '@chakra-ui/react'
-import React, {useState} from 'react'
+import React, {useState,useRef} from 'react'
 import Navbar from '../component/Navbar'
 import axios from 'axios'
 import { API_URL } from '../helper'
 import {useSelector} from 'react-redux'
-import { useNavigate,useSearchParams } from 'react-router-dom'
-import { AiOutlineMenu } from 'react-icons/ai'
+import { useNavigate} from 'react-router-dom'
+import { useEffect } from 'react'
 
 
 
 
 const ProfilPage = () => {
-    const [toggle, setToggle]=useState(false)
-    const[toggleEdit,setToggleEdit]=useState(false)
-    const [postDetail, setPostDetail] = useState([])
-    const[updateCaption, SetUpdateCaption]=useState(' ')
     const navigate=useNavigate()
     const toast = useToast()
 
+    const [dataPosting,setDataPosting]=useState([])
+    const [dataLike,setDataLike]=useState([])
+    const [fetchStatus, setFetchStatus]=useState(false)
 
-    const{username,email, posting,bio,images,status}= useSelector((state)=>{
+      // state posting
+  const [img,setImg]=useState()
+  const [caption,setCaption]=useState('')
+  const hiddenFileInput = useRef(null)
+  const [toggle, setToggle]=useState(false)
+
+    const{id,username,email,bio,avatar,status}= useSelector((state)=>{
         return {
+            
+            id:state.userReducer.idusers,
             username:state.userReducer.username,
             email:state.userReducer.email,
-            posting:state.userReducer.posting,
-            images:state.userReducer.images,
+            avatar:state.userReducer.images,
             bio:state.userReducer.bio,
             status:state.userReducer.status,
+        
         }
     })
 
-    console.log(posting)
+    console.log(dataLike)
 
-
-    const openModalDetail=(toggle, val)=>{
-        setPostDetail(val)
-        setToggle(!toggle)
-    }
-
-    const deletePosting = ()=>{
-        axios.delete(API_URL+`/posting/${postDetail.idposting}`)
+    const getData = ()=>{
+        axios.get(API_URL+`/posting/profile/${id}`)
         .then((res)=>{
-            toast({
-                title: 'Your posting has deleted',
-                description: `success delete`,
-                status: 'success',
-                duration: 2000,
-                isCloseable: true,
-            })
-            setToggle(!toggle)
-            // navigate('/profile')        
-        })
-        .catch((err)=>{
-            toast({
-                title: 'Error Deleted',
-                description: err.message,
-                status: 'error',
-                duration: 2000,
-                isClosable: true,
-            });
-        })
-    }
-
-    const updatePosting =()=>{
-        axios.patch(API_URL+`/posting/${postDetail.idposting}`,{
-            caption:updateCaption.length>0?updateCaption:postDetail.caption
-        })
-        .then((res)=>{
-            if(res.data.success){
-                toast({
-                    title:"Updated Caption",
-                    desctiption: "Updated Caption",
-                    status:"success",
-                    duration:5000,
-                    isClosable:true
-                })
-                setToggleEdit(!toggleEdit)
-            }
+            setDataPosting(res.data)
         }).catch((err)=>{
-            toast({
-                title:`${err}`,
-                desctiption: 'eror',
-                status:"warning",
-                duration:3000,
-                isClosable:true
-            })
+          console.log(err)
         })
-        
     }
 
-    
+    useEffect(()=>{
+       getData()
+       getDataLike()
+    },[fetchStatus])
+
+    const getDataLike = ()=>{
+        axios.get(API_URL+`/like/${id}`)
+        .then((res)=>{
+            setDataLike(res.data)
+        }).catch((err)=>{
+          console.log(err)
+        })
+    }
+
     const resendVerif = async ()=>{
         try {
             await axios.post(`${API_URL}/auth/resend/`,{
@@ -125,107 +97,184 @@ const ProfilPage = () => {
         }
     }
 
-  const printData = ()=>{
-    return posting.map((val,idx)=>{
+  const printDataPosting = ()=>{
+    return dataPosting.map((val)=>{
         return(
             <div className='col-4' key={val.id}>
             <Stack direction={'row'}>
-                <Image boxSize={'2xs'} onClick={()=>openModalDetail(toggle, val)}  my={'5'} src={API_URL+val.images}/>
+                <Image boxSize={'2xs'} my={'5'} src={API_URL+val.images} onClick={()=>navigate(`/p/${val.idposting}`,{state:val})} />
             </Stack>
             </div>
         )
     })
   }
+
+  const printDataLike = ()=>{
+    return dataLike.map((val)=>{
+        return(
+            <div className='col-4' key={val.id}>
+            <Stack direction={'row'}>
+                <Image boxSize={'2xs'} my={'5'} src={API_URL+val.images} onClick={()=>navigate(`/p/${val.idposting}`,{state:val})} />
+            </Stack>
+            </div>
+        )
+    })
+  }
+
+
+  // Post posting
+
+const submitPosting = ()=>{
+    let formData = new FormData();
+    formData.append('data',JSON.stringify({
+      caption,
+      users_id:id
+    }))
+    formData.append('images',img)
+    axios.post(API_URL+`/posting`,formData).then((res)=>{
+        console.log(formData)
+      if(res.data.success){
+        console.log(res)
+        toast({
+          title:'Posting Submited',
+          status:'success',
+          duration: 2000,
+          isCloseable:true
+        })
+        setFetchStatus(true)
+        setToggle(!toggle)
+      }
+    })
+    .catch((err)=>{
+      console.log(err)
+      toast({
+        title: 'Error submitted',
+        description: err.message,
+        status: 'error',
+        duration: 2000,
+        isClosable: true,
+      })
+    })
+  }
+  
+  const handleClick = event => {
+    hiddenFileInput.current.click();
+  };
+  
+  const imgChange =((e)=>{
+    if (e.target.files && e.target.files.length > 0) {
+      setImg(e.target.files[0]);
+    }
+  })
+  
+  const removeImg = () => {
+    setImg();
+  };
+
   return (
     <div>
-        <Navbar/>
+        <Navbar onClickOpenModal={()=>{
+            setToggle(true)
+          }}/>
         <div style={{backgroundColor:'#F6F7F9', paddingTop:'20px', height:'100vh'}}>
             <Container borderColor={'red'} maxW={'container.md'}>
                 {
-                    status == 'Unverified' &&
+                    status === 'Unverified' &&
                     <>
                     <div className='d-flex justify-content-center'>
                     <Button textAlign={'center'} textColor={'red.300'} variant={'unstyled'} onClick={resendVerif}>Please click to resend verification link to access all features</Button>
                     </div>
                     </>
                 }
-                <Box border={'2px'} borderTop={'none'} borderLeft={'none'} borderRight={'none'} borderBlockEndColor={'gray.400'}  marginY={5}>
-                    <div className=' row pb-5 ps-5 '>
+                <Box >
+                    <div className=' row pb-2 ps-5 '>
                         <div className='col-3 d-flex justify-content-end'>
                             <Box>
-                                <Avatar size={'xl'} src={API_URL+images}>
+                                <Avatar size={'lg'} src={API_URL+avatar}>
                                 </Avatar>
                             </Box>
                         </div>
                         <div className='col-8'>
-                            <div className='d-flex'>
+                            <div className='d-flex mb-3'>
                                 <Text>{username}</Text>
                                 <Button size={'xs'} onClick={()=>navigate('/edit')}> Edit Profil</Button>
-                            </div>
-                            <div className='d-flex'>
-                                <Text fontSize={'xs'} fontFamily={'sans-serif'} color={'black'} mt={5} className='fw-bold'>{posting.length} Kiriman</Text>
                             </div>
                                 <Text as={'sup'}>{bio}</Text>
                         </div>
                     </div>
                 </Box>
-                <div className='row '>
-                    {printData()}
-                </div>
+                <Tabs variant='enclosed'  align='center'>
+                    <TabList>
+                        <Tab>Own Post</Tab>
+                        <Tab>Liked Post</Tab>
+                    </TabList>
+                    <TabPanels>
+                        <TabPanel>
+                        <div className='row '>
+                            {printDataPosting()}
+                         </div>
+                        </TabPanel>
+                        <TabPanel>
+                        <div className='row '>
+                            {printDataLike()}
+                         </div>
+                        </TabPanel>
+                    </TabPanels>
+                </Tabs>
+             
             </Container>
         </div>
-            <Modal isOpen={toggle} onClose={()=>setToggle(!toggle)} size={'5xl'}>
-                <ModalOverlay/>
-                <ModalContent>
-                    <ModalHeader></ModalHeader>
-                    <ModalCloseButton/>
-                    <ModalBody>
-                        <div className='row'>
-                            <Box className='col-7'>
-                                <Image src={API_URL + postDetail.images} boxSize={'xl'}/>
-                            </Box>
-                            <Box className='col-5' boxShadow={'xl'}>
-                                <div className='row'>
-                                    <div className='col-6 d-flex '>
-                                    <Avatar size={'xs'} mb={'4px'} me={'4px'}></Avatar>
-                                    <Text >{username}</Text>
-                                    </div>
-                                    <div className='col-6 d-flex justify-content-end'>
-                                       <Menu>
-                                        <MenuButton>
-                                            <AiOutlineMenu/>
-                                        </MenuButton>
-                                        <MenuList width={'fit-content'}>
-                                            <MenuItem onClick={()=>setToggleEdit(!toggleEdit)}>Edit Caption</MenuItem>
-                                            <MenuItem onClick={deletePosting}>Delete</MenuItem>
-                                        </MenuList>
-                                       </Menu>
-                                    </div>
-                                </div>
-                                <Box mt={3} border={'1px'} borderEnd={'none'} borderStart={'none'} borderTop={'none'} className='d-flex'>
-                                </Box>
-                                <div className='mt-2 d-flex'>
-                                <Avatar size={'xs'} me={1}></Avatar>
-                                <Text className='fw-bold'>{username}</Text>
-                                {toggleEdit ?
-                                <div>
-                                    <Textarea onChange={(e)=>SetUpdateCaption(e.target.value)} defaultValue={postDetail.caption} size={''} />
-                                    <Button onClick={updatePosting}>Ok</Button>
-                                    <Button onClick={()=>setToggleEdit(!toggleEdit)}>Cancel</Button>
-                                </div>
-                                :
-                                <Text ms={1} textAlign={'justify'}>{postDetail.caption}</Text>
-                                }
-                                </div>
-                                {/* <Text className='text-muted' as={'sup'}>{postDetail.add_date.split('').splice(0,10).join('')}</Text> */}
-                            </Box>
-                        </div>
-                    </ModalBody>
-                    <ModalFooter>
-                        {/* <Input placeholder='add comment'/> */}
-                    </ModalFooter>
-                </ModalContent>
-            </Modal>
+            {/* MODAL POST POSTING */}
+     <Modal isOpen={toggle} onClose={()=>setToggle(!toggle, setImg())} size={'xl'} >
+          <ModalOverlay/>
+          <ModalContent background={'whiteAlpha.800'}>
+            <ModalHeader>Add Your Image</ModalHeader>
+            <ModalCloseButton/>
+            <ModalBody>
+              <div className='row'>
+                <div className=''>
+              <div className=''>
+                <div className='d-flex justify-content-center'>
+                </div>
+                <div className='d-flex justify-content-center'>
+              <Image src={img ? URL.createObjectURL(img) : 'https://pertaniansehat.com/v01/wp-content/uploads/2015/08/default-placeholder.png' } 
+              boxSize={'lg'}/>
+              </div>
+              {
+                img&&
+              <div className='d-flex justify-content-center'>
+              <Button  colorScheme={'red'} onClick={removeImg} bg={'red.600'}>Remove</Button>
+              </div>
+              }
+              </div>
+              {!img &&
+              <div className='d-flex justify-content-center'>
+                <Input variant={'flushed'} mt={3} ref={hiddenFileInput} display={'none'} accept='image/*'onChange={imgChange} type='file'/>
+                <Button onClick={handleClick} colorScheme={'telegram'}> Select Picture</Button>
+              </div>
+              
+              }
+                </div>
+                <div className=''>
+                  <Box size={100}  >
+                    {
+                      img &&
+                      <Textarea placeholder='Write Caption' bg={'white'} resize={'none'} mt={10} maxH={'400px'}   border={'none'}  className='border-0' onChange={(e)=>setCaption(e.target.value)} type='text' />
+                    }
+                  </Box>
+                  </div>
+              </div>
+            </ModalBody>
+            <ModalFooter>
+              {
+                img &&
+              <Button colorScheme={'teal'} type='submit' onClick={submitPosting}>
+                Submit
+              </Button>
+              }
+            </ModalFooter>
+          </ModalContent>
+        </Modal>
     </div>
   )
 }

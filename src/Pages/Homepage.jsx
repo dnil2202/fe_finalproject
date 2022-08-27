@@ -37,14 +37,13 @@ const Homepage = () => {
   const [page, setPage] = useState(1)
 
 
-  const {id,fullname,username,images,status,likes} = useSelector((state)=>{
+  const {id,fullname,username,images,status} = useSelector((state)=>{
     return{
       id : state.userReducer.idusers,
       fullname : state.userReducer.fullname,
       username : state.userReducer.username,
       images : state.userReducer.images,
       status : state.userReducer.status,
-      likes : state.userReducer.like
     }
   })
 
@@ -115,8 +114,6 @@ const submitComment =(e)=>{
     })
   })
 }
-
-
 
 const submitLike =(idposting)=>{
   let idLike = parseInt(idposting)

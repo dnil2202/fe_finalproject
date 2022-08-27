@@ -20,6 +20,8 @@ import axios from 'axios'
 import { useSelector } from 'react-redux'
 import { AiOutlineMenu } from 'react-icons/ai'
 import { AiFillLike,AiOutlineLike} from "react-icons/ai";
+import {FcCheckmark} from "react-icons/fc";
+import {MdCancel} from "react-icons/md";
 
 const PostingDetail = () => {
   const {state} = useLocation()
@@ -42,8 +44,7 @@ const PostingDetail = () => {
       username : state.userReducer.username,
     }
   })
-console.log(state)
-console.log(detail.likes)
+console.log(detail)
 
 
  
@@ -126,7 +127,8 @@ const updatePosting =()=>{
 const deletePosting = ()=>{
   axios.delete(API_URL+`/posting/${state.idposting}`)
   .then((res)=>{
-    navigate('/home')        
+    navigate('/profil')       
+    setFetchStatus(true) 
       toast({
           title: 'Your posting has deleted',
           description: `success delete`,
@@ -176,6 +178,7 @@ const deleteLike =(idLike)=>{
   })
 }
 
+
 let addLike
   return (
       <div>
@@ -192,7 +195,7 @@ let addLike
                 <Box className='col-5 card'>
                   <div className='d-flex justify-content-between'>
                     <div className='d-flex mt-3'>
-                  <Avatar size={'sm'}  src={API_URL+state.avatar}/>
+                  <Avatar size={'sm'}  src={API_URL+detail.avatar}/>
                   <Text fontFamily={'serif'} fontSize={'sm'} mt={1} ms={2}>{detail.user_name_post}</Text>
                     </div>
                     {
@@ -216,8 +219,8 @@ let addLike
                     {toggleEdit ?
                      <div>
                      <Textarea onChange={(e)=>SetUpdateCaption(e.target.value)}  defaultValue={detail.caption} size={''} />
-                     <Button size={'sm'} onClick={updatePosting} me={5} variant={'unstyled'} >Ok</Button>
-                     <Button size={'sm'} variant={'unstyled'} onClick={()=>setToggleEdit(!toggleEdit)}>Cancel</Button>
+                     <Button size={'sm'} onClick={updatePosting} me={5} variant={'unstyled'} ><FcCheckmark size={20}/></Button>
+                     <Button size={'sm'} variant={'unstyled'} onClick={()=>setToggleEdit(!toggleEdit)}><MdCancel color={'red'} size={20}/></Button>
                  </div>
                  :
                     <Text fontFamily={'serif'} fontSize={'md'}>{detail.caption}</Text>
@@ -287,7 +290,6 @@ let addLike
               </div>
             </Container>
         </div>
-
     </div>
   )
 }

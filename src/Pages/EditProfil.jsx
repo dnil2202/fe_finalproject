@@ -33,6 +33,7 @@ const EditProfil = () => {
     })
 
 
+
     const updateData =()=>{
         let formData = new FormData()
         if(addAvatar.length>0){
