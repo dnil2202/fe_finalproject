@@ -127,15 +127,15 @@ const updatePosting =()=>{
 const deletePosting = ()=>{
   axios.delete(API_URL+`/posting/${state.idposting}`)
   .then((res)=>{
-    navigate('/profil')       
     setFetchStatus(true) 
-      toast({
-          title: 'Your posting has deleted',
-          description: `success delete`,
-          status: 'success',
-          duration: 3000,
-          isCloseable: true,
-      })
+    toast({
+      title: 'Your posting has deleted',
+      description: `success delete`,
+      status: 'success',
+      duration: 3000,
+      isCloseable: true,
+    })
+    navigate('/profil')       
   })
   .catch((err)=>{
       toast({
@@ -183,9 +183,13 @@ let addLike
   return (
       <div>
         <Navbar/>
-        <div style={{backgroundColor:'#F6F7F9', paddingTop:'80px', height:'100vh'}}>
-            <Container  maxW={'4xl'} >
+        <div style={{backgroundColor:'#F6F7F9', paddingTop:'10px', height:'100vh'}}>
+            <Container  maxW={'3xl'} >
               <div>
+                <div className='d-flex justify-content-between'>
+                  <Button variant={'none'} textColor={'telegram.600'} size={'sm'}  onClick={()=> navigate(`/home`)}>Home</Button>
+                  <Button variant={'none'} textColor={'telegram.600'} size={'sm'} onClick={()=> navigate(`/profil`)}>Profile</Button>
+                </div>
               <div className='row shadow'>
                 <div className='col-7' >
                   <div>

@@ -1,27 +1,32 @@
-import { Text } from '@chakra-ui/react';
+import { Button, Text } from '@chakra-ui/react';
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 const NotFoundPage = (props) => {
-    // const navigate = useNavigate();
-    // const { iduser } = useSelector((state) => {
-    //     return {
-    //         iduser: state.userReducer.iduser
-    //     }
-    // });
 
-    // React.useEffect(() => {
-    //     console.log(iduser)
-    //     if (iduser) {
-    //         navigate('/', { replace: true });
-    //     }
-    // }, [iduser]);
+    const navigate=useNavigate()
 
-    return <div className='container main-page'>
-        <Text textAlign='center' fontSize='6xl'>
-            PAGE NOT FOUND
-        </Text>
+    return(
+        <div style={{height:'100vh' ,backgroundImage:`url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAYAAACpSkzOAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAALEgAACxIB0t1+/AAAABZ0RVh0Q3JlYXRpb24gVGltZQAxMC8yOS8xMiKqq3kAAAAcdEVYdFNvZnR3YXJlAEFkb2JlIEZpcmV3b3JrcyBDUzVxteM2AAABHklEQVRIib2Vyw6EIAxFW5idr///Qx9sfG3pLEyJ3tAwi5EmBqRo7vHawiEEERHS6x7MTMxMVv6+z3tPMUYSkfTM/R0fEaG2bbMv+Gc4nZzn+dN4HAcREa3r+hi3bcuu68jLskhVIlW073tWaYlQ9+F9IpqmSfq+fwskhdO/AwmUTJXrOuaRQNeRkOd5lq7rXmS5InmERKoER/QMvUAPlZDHcZRhGN4CSeGY+aHMqgcks5RrHv/eeh455x5KrMq2yHQdibDO6ncG/KZWL7M8xDyS1/MIO0NJqdULLS81X6/X6aR0nqBSJcPeZnlZrzN477NKURn2Nus8sjzmEII0TfMiyxUuxphVWjpJkbx0btUnshRihVv70Bv8ItXq6Asoi/ZiCbU6YgAAAABJRU5ErkJggg==)`}}>
+            <div className="container">
+    <div className="row">
+        <div className="col-md-12">
+            <div style={{padding:'40px 15px', textAlign:'center'}}>
+                <Text fontSize={'6xl'}>Oops!</Text>
+                <Text fontSize={'4xl'} className='fw-bold'>404 Not Found</Text>
+                <div>
+                    Sorry, an error has occured, Requested page not found!
+                </div>
+                <div style={{marginTop:'15px', marginBottom:'15px'}}>
+                    <Button colorScheme={'telegram'} onClick={()=>navigate('/home')} me={5} >Home</Button>
+                    <Button colorScheme={'teal'} onClick={()=>navigate('/')} >Login</Button>
+                </div>
+            </div>
+        </div>
     </div>
+</div>
+        </div>
+    )
 }
 
 export default NotFoundPage;

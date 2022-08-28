@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { Box,Text,Avatar,useToast, List, ListItem, Button, Input, Divider, Container, Modal,
+import { Box,Text,Avatar,useToast, Button, Input, Divider, Container, Modal,
   ModalOverlay,
   ModalContent,
   ModalHeader,
@@ -13,9 +13,8 @@ import { Box,Text,Avatar,useToast, List, ListItem, Button, Input, Divider, Conta
 import axios from 'axios'
 import { API_URL } from '../helper';
 import Navbar from '../component/Navbar';
-import {useSelector, useDispatch} from 'react-redux'
+import {useSelector} from 'react-redux'
 import {GoUnverified} from 'react-icons/go'
-import { logoutAction } from '../action/useraction';
 import { useNavigate,} from 'react-router-dom';
 import { AiFillLike,AiOutlineLike} from "react-icons/ai";
 import InfiniteScroll from 'react-infinite-scroll-component';
@@ -23,9 +22,11 @@ import InfiniteScroll from 'react-infinite-scroll-component';
 
 const Homepage = () => {
   const [dataPosting, setDataPosting]=useState([])
-  const [addComment, setAddComment]=useState('')
+  const [addComment, setAddComment]=useState({
+    name:'',
+    comment:'',
+  })
   const navigate = useNavigate()
-  const dispatch = useDispatch()
   const toast = useToast()
   const [fetchStatus, setFetchStatus]=useState(false)
   // state posting
@@ -46,7 +47,6 @@ const Homepage = () => {
       status : state.userReducer.status,
     }
   })
-
 
 
   useEffect(() => {
@@ -95,14 +95,17 @@ const submitComment =(e)=>{
   }).then((res)=>{
     if(res.data.success){
       setFetchStatus(true)
-      setAddComment('')
       toast({
         title: "Comment Submited",
         description: `Comment Success`,
         status: "success",
         duration: 3000,
         isClosable: true
-    })
+      })
+      setAddComment({
+        name:'',
+        comment:''
+      })
     }
   }).catch((err)=>{
     toast({
@@ -123,7 +126,6 @@ const submitLike =(idposting)=>{
       userId:id,
     }).then((res)=>{
       setFetchStatus(true)
-      console.log(res.data)
     }).catch((err)=>{
       console.log(err)
     })
@@ -189,10 +191,10 @@ const removeImg = () => {
 
 
   const printData=()=>{
-    return dataPosting.map((val,idx)=>{
+    return dataPosting.map((val)=>{
       let addLike
       return(
-        <div className='col-lg-12' key={idx}>
+        <div className='col-lg-12' key={val.idposting}>
         <div className='card w-100 h-100 mb-3'>
           <div className='d-flex mx-2 my-2'>
           <Avatar size={'sm'} src={API_URL+val.avatar}>
@@ -231,7 +233,7 @@ const removeImg = () => {
             <p className='card-title'>{val.caption}</p>
             <Button variant={'unstyled'} size={'xs'} className='text-muted' onClick={()=> navigate(`/p/${val.idposting}`,{
               state:val
-            })} >{val.comment ?`View all ${val.comment.length} Comment`:'View all'}</Button>
+            })} >View Detail</Button>
             {
               val.comment &&
               val.comment.map((v)=>{
@@ -248,7 +250,7 @@ const removeImg = () => {
           </div>
           <Divider/>
           <div className='d-flex justify-content-between'>
-          <Input size={'sm'} border={'none'} variant={'unstyled'} onChange={(e)=>setAddComment(e.target.value)} value={addComment} placeholder='Tambahkan Komentar anda'></Input>
+          <Input size={'sm'} border={'none'} variant={'unstyled'} onChange={(e)=>setAddComment(e.target.value)} name={`comment-${val.idposting}`} value={addComment.comment} placeholder='Tambahkan Komentar anda'></Input>
           <Button size={'xs'} border={'none'} bgColor={'white'} variant={'unstyled'} textColor={'blue'} value={val.idposting} onClick={submitComment}>Post</Button>
           </div>
           </div>
@@ -261,7 +263,7 @@ const removeImg = () => {
     return (
       <div >
         {
-          status == 'Unverified'?
+          status === 'Unverified'?
           <>
           <Navbar/>
           <div style={{backgroundColor:'#F6F7F9', paddingTop:'20px', height:'100vh'}}>
