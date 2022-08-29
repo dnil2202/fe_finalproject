@@ -1,4 +1,4 @@
-import React, {useState,useEffect} from 'react'
+import React, {useState,useEffect,useRef} from 'react'
 import Navbar from '../component/Navbar'
 import { useLocation,useNavigate } from 'react-router-dom' 
 import { Avatar, 
@@ -14,6 +14,14 @@ import { Avatar,
   MenuList,
   MenuItem,
   Menu,
+  Modal,
+  Input,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalCloseButton,
+  ModalBody,
+  ModalFooter,
 } from '@chakra-ui/react'
 import { API_URL } from '../helper'
 import axios from 'axios'
@@ -27,8 +35,14 @@ const PostingDetail = () => {
   const {state} = useLocation()
   const toast = useToast()
   const[toggleEdit,setToggleEdit]=useState(false)
-  const[updateCaption, SetUpdateCaption]=useState(' ')
+  const[updateCaption, SetUpdateCaption]=useState('')
   const navigate = useNavigate()
+
+    // state posting
+    const [img,setImg]=useState()
+    const [caption,setCaption]=useState('')
+    const hiddenFileInput = useRef(null)
+    const [toggle, setToggle]=useState(false)
 
   const [addComment, setAddComment]=useState('')
   const [detail, setDetail] = useState('');
@@ -44,7 +58,7 @@ const PostingDetail = () => {
       username : state.userReducer.username,
     }
   })
-console.log(detail)
+console.log(updateCaption.length)
 
 
  
@@ -68,7 +82,6 @@ useEffect(()=>{
   
 
   const submitComment =(e)=>{
-    let idPosting = parseInt(e.target.value)
     axios.post(API_URL + '/comment',{
       comment:addComment,
       user_comment_id:id,
@@ -98,7 +111,7 @@ useEffect(()=>{
 
 const updatePosting =()=>{
     axios.patch(API_URL+`/posting/${state.idposting}`,{
-        caption:updateCaption.length>0?updateCaption:state.caption
+        caption:updateCaption
     })
     .then((res)=>{
         if(res.data.success){
@@ -178,18 +191,65 @@ const deleteLike =(idLike)=>{
   })
 }
 
+// Post Posting
+
+const submitPosting = ()=>{
+  let formData = new FormData();
+  formData.append('data',JSON.stringify({
+    caption,
+    users_id:id
+  }))
+  formData.append('images',img)
+  axios.post(API_URL+`/posting`,formData).then((res)=>{
+    if(res.data.success){
+      toast({
+        title:'Posting Submited',
+        status:'success',
+        duration: 2000,
+        isCloseable:true
+      })
+      setFetchStatus(true)
+      setToggle(!toggle)
+    }
+  })
+  .catch((err)=>{
+    console.log(err)
+    toast({
+      title: 'Error submitted',
+      description: err.message,
+      status: 'error',
+      duration: 2000,
+      isClosable: true,
+    })
+  })
+}
+
+const handleClick = event => {
+  hiddenFileInput.current.click();
+};
+
+const imgChange =((e)=>{
+  if (e.target.files && e.target.files.length > 0) {
+    setImg(e.target.files[0]);
+  }
+})
+
+const removeImg = () => {
+  setImg();
+};
+
 
 let addLike
   return (
       <div>
-        <Navbar/>
+        <Navbar
+         onClickOpenModal={()=>{
+          setToggle(true)
+        }}
+        />
         <div style={{backgroundColor:'#F6F7F9', paddingTop:'10px', height:'100vh'}}>
             <Container  maxW={'3xl'} >
               <div>
-                <div className='d-flex justify-content-between'>
-                  <Button variant={'none'} textColor={'telegram.600'} size={'sm'}  onClick={()=> navigate(`/home`)}>Home</Button>
-                  <Button variant={'none'} textColor={'telegram.600'} size={'sm'} onClick={()=> navigate(`/profil`)}>Profile</Button>
-                </div>
               <div className='row shadow'>
                 <div className='col-7' >
                   <div>
@@ -203,18 +263,31 @@ let addLike
                   <Text fontFamily={'serif'} fontSize={'sm'} mt={1} ms={2}>{detail.user_name_post}</Text>
                     </div>
                     {
-                      username === state.user_name_post &&
+                      username === state.user_name_post ?
                       <div>
                         <Menu>
                         <MenuButton>
                             <AiOutlineMenu className='mt-4'/>
                         </MenuButton>
                         <MenuList width={'fit-content'}>
+                          <MenuItem >Share content</MenuItem>
                           <MenuItem onClick={()=>setToggleEdit(!toggleEdit)}>Edit Caption</MenuItem>
                           <MenuItem onClick={deletePosting}>Delete</MenuItem>
                         </MenuList>
                         </Menu>
                       </div>
+                      :
+                      <div>
+                      <Menu size={60}>
+                      <MenuButton>
+                          <AiOutlineMenu className='mt-4'/>
+                      </MenuButton>
+                      <MenuList width={'fit-content'}>
+                        <MenuItem >Share content</MenuItem>
+                      </MenuList>
+                      </Menu>
+                    </div>
+
                 
                     }
                   </div>
@@ -222,8 +295,8 @@ let addLike
                   <div>
                     {toggleEdit ?
                      <div>
-                     <Textarea onChange={(e)=>SetUpdateCaption(e.target.value)}  defaultValue={detail.caption} size={''} />
-                     <Button size={'sm'} onClick={updatePosting} me={5} variant={'unstyled'} ><FcCheckmark size={20}/></Button>
+                     <Textarea onChange={(e)=>SetUpdateCaption(e.target.value)}  defaultValue={detail.caption}/>
+                     <Button size={'sm'} onClick={updatePosting} me={5} variant={'unstyled'} isDisabled={updateCaption.length<1} ><FcCheckmark size={20}/></Button>
                      <Button size={'sm'} variant={'unstyled'} onClick={()=>setToggleEdit(!toggleEdit)}><MdCancel color={'red'} size={20}/></Button>
                  </div>
                  :
@@ -281,18 +354,73 @@ let addLike
             <Text as={'sup'} className='fw-bold' >0 Likes</Text>
           }
           </div>
-          <div className='footer mt-5' >
+          <div className='footer' >
           <Divider color={'gray.100'}/>
           <div className='d-flex card-footer bg-white'>
-            <Textarea size={'sm'} placeholder='Add Comment' variant={'unstyled'} onChange={(e)=>setAddComment(e.target.value)} value={addComment} />
-            <Button variant={'ghost'} size={'xs'} mt={10} textColor={'blue'} value={detail.idposting} onClick={submitComment} >POST</Button>
+            <Textarea size={'sm'} placeholder='Add Comment' variant={'unstyled'} resize={'none'} onChange={(e)=>setAddComment(e.target.value)} value={addComment} />
+            <Button variant={'ghost'} size={'xs'} mt={10} textColor={'blue'} isDisabled={addComment.length<1} value={detail.idposting} onClick={submitComment} >POST</Button>
           </div>
+          {
+            addComment.length >0 &&
+            <Text as={'sup'} className={'text-muted'}>{addComment.length} Character</Text>
+          }
           </div>
                   </div>
                 </Box>
               </div>
               </div>
             </Container>
+                {/* MODAL POST POSTING */}
+     <Modal isOpen={toggle} onClose={()=>setToggle(!toggle, setImg())} size={'xl'} >
+          <ModalOverlay/>
+          <ModalContent background={'whiteAlpha.800'}>
+            <ModalHeader>Add Your Image</ModalHeader>
+            <ModalCloseButton/>
+            <ModalBody>
+              <div className='row'>
+                <div className=''>
+              <div className=''>
+                <div className='d-flex justify-content-center'>
+                </div>
+                <div className='d-flex justify-content-center'>
+              <Image src={img ? URL.createObjectURL(img) : 'https://pertaniansehat.com/v01/wp-content/uploads/2015/08/default-placeholder.png' } 
+              boxSize={'lg'}/>
+              </div>
+              {
+                img&&
+              <div className='d-flex justify-content-center'>
+              <Button  colorScheme={'red'} onClick={removeImg} bg={'red.600'}>Remove</Button>
+              </div>
+              }
+              </div>
+              {!img &&
+              <div className='d-flex justify-content-center'>
+                <Input variant={'flushed'} mt={3} ref={hiddenFileInput} display={'none'} accept='image/*'onChange={imgChange} type='file'/>
+                <Button onClick={handleClick} colorScheme={'telegram'}> Select Picture</Button>
+              </div>
+              
+              }
+                </div>
+                <div className=''>
+                  <Box size={100}  >
+                    {
+                      img &&
+                      <Textarea placeholder='Write Caption' bg={'white'} resize={'none'} mt={10} maxH={'400px'}   border={'none'}  className='border-0' onChange={(e)=>setCaption(e.target.value)} type='text' />
+                    }
+                  </Box>
+                  </div>
+              </div>
+            </ModalBody>
+            <ModalFooter>
+              {
+                img &&
+              <Button colorScheme={'teal'} type='submit' onClick={submitPosting}>
+                Submit
+              </Button>
+              }
+            </ModalFooter>
+          </ModalContent>
+        </Modal>
         </div>
     </div>
   )

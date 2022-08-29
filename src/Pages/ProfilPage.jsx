@@ -40,10 +40,11 @@ const ProfilPage = () => {
   const hiddenFileInput = useRef(null)
   const [toggle, setToggle]=useState(false)
 
-    const{id,username,email,bio,avatar,status}= useSelector((state)=>{
+    const{id,username,fullname,email,bio,avatar,status}= useSelector((state)=>{
         return {
             
             id:state.userReducer.idusers,
+            fullname:state.userReducer.fullname,
             username:state.userReducer.username,
             email:state.userReducer.email,
             avatar:state.userReducer.images,
@@ -102,7 +103,7 @@ const ProfilPage = () => {
         return(
             <div className='col-4' key={val.id}>
             <Stack direction={'row'}>
-                <Image boxSize={'2xs'} my={'5'} src={API_URL+val.images} onClick={()=>navigate(`/p/${val.idposting}`,{state:val})} />
+                <Image boxSize={'2xs'} objectFit={'cover'} my={'5'} src={API_URL+val.images} onClick={()=>navigate(`/p/${val.idposting}`,{state:val})} />
             </Stack>
             </div>
         )
@@ -195,11 +196,19 @@ const submitPosting = ()=>{
                             </Box>
                         </div>
                         <div className='col-8'>
-                            <div className='d-flex mb-3'>
-                                <Text>{username}</Text>
-                                <Button size={'xs'} onClick={()=>navigate('/edit')}> Edit Profil</Button>
+                          <div>
+                            <div className='d-flex'>
+                                <Text className='fw-bold'>{username}</Text>
+                                <Button size={'xs'} ms={3} textColor={'telegram.400'} onClick={()=>navigate('/edit')}> Edit Profil</Button>
+                            </div>
+                            <div>
+                                <Text as={'sup'} className='text-muted'>{fullname}</Text>
+                            </div>
+                            <div>
+                                <Text as={'sup'} className='text-muted'>{email}</Text>
                             </div>
                                 <Text as={'sup'}>{bio}</Text>
+                          </div>
                         </div>
                     </div>
                 </Box>
@@ -232,8 +241,8 @@ const submitPosting = ()=>{
             <ModalCloseButton/>
             <ModalBody>
               <div className='row'>
-                <div className=''>
-              <div className=''>
+                <div>
+              <div>
                 <div className='d-flex justify-content-center'>
                 </div>
                 <div className='d-flex justify-content-center'>

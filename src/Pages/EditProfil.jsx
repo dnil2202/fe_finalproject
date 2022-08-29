@@ -32,6 +32,9 @@ const EditProfil = () => {
         }
     })
 
+    console.log(bio)
+    console.log(newBio.length)
+
 
 
     const updateData =()=>{
@@ -41,14 +44,13 @@ const EditProfil = () => {
                 fullname: newFullname.length>0?newFullname:fullname,
                 username:newUsername.length>0?newUsername:username,
                 bio:newBio.length>0?newBio:bio,
-                // email:newEmail,
             }))
             formData.append('images',addAvatar)
         }else{
             formData.append('data',JSON.stringify({
                 fullname: newFullname.length>0?newFullname:fullname,
                 username:newUsername.length>0?newUsername:username,
-                bio:newBio.length>0?newBio:bio,
+                bio:newBio.length>1?newBio:bio,
                 // email:newEmail,
             }))
             formData.append('images',addAvatar)
@@ -115,11 +117,11 @@ const EditProfil = () => {
                             </div>
                             <div className='d-flex justify-content-center mb-4'>
                                 <Text className='fw-bold' fontSize={'sm'}>Bio</Text>
-                                <Textarea size={'sm'} w={'60'} ml={12} bg={'gray.100'} defaultValue={bio} onChange={(e)=>setNewBio(e.target.value)}  />
+                                <Textarea size={'sm'} w={'60'} ms={14} bg={'gray.100'} defaultValue={bio} resize={'none'} onChange={(e)=>setNewBio(e.target.value)}  />
                             </div>
                         </div>
                         <div className='d-flex justify-content-center'>
-                            <Button colorScheme={'messenger'} size={'sm'} mb={10} onClick={updateData}>Submit</Button>
+                            <Button colorScheme={'messenger'} size={'sm'} mb={10}  onClick={updateData}>Submit</Button>
                         </div>
                     </div>
                 </div>

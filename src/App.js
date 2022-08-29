@@ -2,7 +2,6 @@ import {Routes, Route} from 'react-router-dom'
 import LandingPages from './Pages/LandingPages';
 import Homepage from './Pages/Homepage';
 import Register from './Pages/Register';
-import Login from './Pages/Loginpage';
 import ForgotPass from './Pages/ForgotPass';
 import ProfilPage from './Pages/ProfilPage';
 import EditProfil from './Pages/EditProfil';
@@ -12,7 +11,7 @@ import axios from 'axios';
 import { API_URL } from './helper';
 import { loginAction } from './action/useraction';
 import { useDispatch, useSelector } from 'react-redux';
-import { useState,useEffect } from 'react';
+import { useEffect } from 'react';
 import NotFoundPage from './Pages/NotFoundPage';
 import PostingDetail from './Pages/PostingDetail';
 
@@ -20,7 +19,7 @@ function App() {
 
   const dispatch = useDispatch()
 
-  const { idusers,status } = useSelector(({ userReducer }) => {
+  const { idusers} = useSelector(({ userReducer }) => {
     return {
       idusers: userReducer.idusers,
       status: userReducer.status
@@ -68,7 +67,6 @@ function App() {
           <>
           <Route path='/' element={<LandingPages/>}/>
           <Route path='/register' element={<Register/>}/>
-          <Route path='/login' element={<Login/>}/>
           <Route path='/reset' element={<ForgotPass/>}/>
           </>
         }

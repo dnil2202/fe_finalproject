@@ -1,9 +1,7 @@
-import React, {useState,useRef,useEffect} from 'react'
+import React from 'react'
 import {
     chakra,
-    Box,
     Flex,
-    useColorModeValue,
     HStack,
     Button,
     Text,
@@ -14,8 +12,8 @@ import {
     MenuList,
     MenuItem,
     Container,
-    useToast,
     Divider,
+    Image
   } from "@chakra-ui/react";
   import {AiFillHome,AiFillPlusCircle} from "react-icons/ai";
   import { useNavigate } from 'react-router-dom';
@@ -30,9 +28,8 @@ const Navbar = (props) => {
 
 
 
-    const{status,images,username}= useSelector((state)=>{
+    const{status,images}= useSelector((state)=>{
       return {
-          username:state.userReducer.username,
           status:state.userReducer.status,
           images:state.userReducer.images
           
@@ -48,27 +45,30 @@ const Navbar = (props) => {
     <Container>
       <Flex alignItems="center" justifyContent="space-around" mx="auto">
         <Flex>
-          <chakra.h1 fontSize="xl" fontStyle={'oblique'} fontWeight="bold" me={'40'} >
+          <chakra.h1 fontSize="xl" fontStyle={'oblique'} fontWeight="bold" me={'40'} onClick={()=>navigate('/home')} >
             GUILD
           </chakra.h1>
         </Flex>
         <HStack display="flex" alignItems="center" spacing={1}>
-        <Input placeholder='search' width={'250px'} size={'sm'} rounded={'3xl'}  />
+        <Input placeholder='search' width={'200px'} size={'sm'} rounded={'3xl'}  />
           <HStack>
             <Button variant="ghost" onClick={()=>navigate('/home')}><AiFillHome size={24}/></Button>
             {/* <Button variant="ghost" ><AiFillMessage size={24}/></Button> */}
             {
-              status == 'Verified' &&
+              status === 'Verified' &&
               <>
             <Button variant="ghost" onClick={props.onClickOpenModal}><AiFillPlusCircle size={24}/></Button>
-           
               </>
             }
-            {/* <Button variant="ghost"><AiFillHeart size={24}/></Button> */}
             <Menu>
               <MenuButton>
                 <div className='d-flex'>
-                <Text as={'sup'} mt={5} me={2}textColor={status=='Unverified'?'red.400':'blue.600'} className='fw-bold'>{username}</Text>
+                <Text as={'sup'} mt={5} me={2}textColor={status==='Unverified'&&'red.400'} className='fw-bold'>
+                  {
+                    status === 'Unverified' && 
+                    status
+                  }
+                </Text>
                 <Avatar size={'sm'} src={API_URL+images}></Avatar>
                 </div>
               </MenuButton>

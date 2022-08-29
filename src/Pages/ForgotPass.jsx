@@ -1,10 +1,13 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Box, Text, Input, Stack, Button } from '@chakra-ui/react/'
 import {GiLockedDoor} from 'react-icons/gi';
 import { useNavigate } from 'react-router-dom';
 
 const ForgotPass = () => {
     const navigate = useNavigate()
+
+    const [email,setEmail]=useState('')
+    
   return (
     <div style={{backgroundColor:'#F6F7F9', backgroundSize:'cover', height:'100vh'}}>
         <div className='d-flex justify-content-center pt-5'>

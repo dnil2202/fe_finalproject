@@ -1,13 +1,9 @@
 import React,{useState} from 'react';
 import images from '../image/mountains-7302806.jpg';
-import { FcGoogle } from 'react-icons/fc';
-import { FaApple,FaRegEye } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import { Box, Input, Stack, Text, Button } from '@chakra-ui/react/'
-import axios from 'axios';
-import { API_URL } from '../helper';
 import { useDispatch } from 'react-redux';
-import { loginAction, loginMiddleWare } from '../action/useraction';
+import { loginMiddleWare } from '../action/useraction';
 import Footer from '../component/footer';
 import { BsFillEyeFill } from 'react-icons/bs';
 
@@ -35,36 +31,12 @@ const LandingPages = (props) => {
             setNotifLogin(true)
             setIsLoading(false)
         }
-   
-        // setIsLoading(true)
-        // axios.post(API_URL+`/auth/login`,{
-        //     email,
-        //     password
-        // })
-        // .then((res)=>{
-        //     console.log(res.data)
-        //     //dispatch bertugas untuk menghubungka action kita agar di cocokan keuser reducer
-        //     // action tidak berhibungan langsung dengan userreducer tapi menggunakan dispatch
-        //     localStorage.setItem('sosmed', res.data.idusers)
-        //     dispatch(loginAction(res.data))
-        //     navigate('/home',{replace:true})
-        //     setEmail({
-        //         email:"",
-        //     })
-        //     setPassword({
-        //         password:"",
-        //     })
-
-        // }).catch((err)=>{
-        //     setIsLoading(false)
-        //     console.log(err)
-        // })
     }
 
     const showPass = ()=>{
-        if(visible=="password"){
+        if(visible==="password"){
             setVisible("text")
-        }else if(visible=="text"){
+        }else if(visible==="text"){
             setVisible("password")
         }
     }
@@ -75,7 +47,7 @@ const LandingPages = (props) => {
         <div style={{backgroundImage: `url(${images})`, backgroundSize:'cover', height:'100vh'}}>
             <div className='container pt-5'>
                 <div className='d-flex justify-content-end'>
-                <Box backgroundColor={'whiteAlpha.600'} shadow={'xl'} border={'1px'} w={400}>
+                <Box backgroundColor={'whiteAlpha.600'} shadow={'xl'}  w={400}>
             <Text textAlign={'center'} color={'blackAlpha.800'} fontSize={50} fontStyle={'unset'} mb={5} >GUILD</Text>
             <Stack spacing={3} mx={10} >
                 <Input onChange={(e)=>setEmail(e.target.value)} placeholder='Email or Username' size='sm' />
