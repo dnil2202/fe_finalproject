@@ -23,7 +23,6 @@ const LandingPages = (props) => {
     const onLogin=async()=>{
         setIsLoading(true)
             let res = await dispatch(loginMiddleWare(email,password))
-            console.log(res)
         if(res.success){
             navigate('/home', {replace:true})
             setIsLoading(false)
@@ -57,7 +56,7 @@ const LandingPages = (props) => {
                 </div>
             </Stack>
             <div className='d-flex justify-content-center mt-5'>
-            <Button type='button' onClick={onLogin} w={100} colorScheme={'blue'} textColor={'white'} isLoading={isLoading} disabled={email.length>0 && password.length>0 ?false:true} mb={3}> SIGN IN</Button>
+            <Button type='button' onClick={onLogin} w={100} colorScheme={'blue'} textColor={'white'} isLoading={isLoading} isDisabled={email.length>0 && password.length>0 ?false:true && isLoading} mb={3}> SIGN IN</Button>
             </div>
             <div className='my-2'>
             </div>
@@ -66,9 +65,6 @@ const LandingPages = (props) => {
                     <Text textColor={'red.400'} textAlign={'center'}>The username you entered doesn't belong to an account. Please check your username and try again.</Text>
                 }
             <Text textAlign={'center'} my={3} textColor={'gray.600'} fontSize={'revert'}  >OR</Text>
-            <div className='d-flex justify-content-center '>
-            {/* <FcGoogle size={40} className='bg-white'/><Button className='bg-white pt-2 rounded-0'w={150} fontSize={'small'}  > SIGN IN WITH GOOGLE</Button> */}
-            </div>
             <div className='d-flex justify-content-center'>
             <Button w={200} colorScheme={'white'}  textColor={'gray.600'} mb={5} onClick={()=>navigate('/reset')} > Forgot Password</Button>
             </div>

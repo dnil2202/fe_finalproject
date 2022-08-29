@@ -4,7 +4,7 @@
 
 // Seperti mendifine react usestae
 const INITIAL_STATE={
-    id: null, 
+    idusers: null, 
     fullname: '',
     username: '',
     bio:'',

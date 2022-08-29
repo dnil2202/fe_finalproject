@@ -89,7 +89,7 @@ const getMoreData = () => {
 const submitComment =(e)=>{
   let idPosting = parseInt(e.target.value)
   axios.post(API_URL + '/comment',{
-    comment:addComment,
+    comment:addComment.comment,
     user_comment_id:id,
     posting_id:idPosting
   }).then((res)=>{
@@ -192,6 +192,7 @@ const removeImg = () => {
 
   const printData=()=>{
     return dataPosting.map((val)=>{
+      console.log(val.comment)
       let addLike
       return(
         <div className='col-lg-12' key={val.idposting}>
@@ -233,16 +234,21 @@ const removeImg = () => {
             <p className='card-title'>{val.caption}</p>
             <Button variant={'unstyled'} size={'xs'} className='text-muted' onClick={()=> navigate(`/p/${val.idposting}`,{
               state:val
-            })} >View Detail</Button>
+            })} >{
+              val.comment ? `View ${val.comment.length} comment on detail`
+              : `View detail`
+            }</Button>
             {
               val.comment &&
-              val.comment.map((v)=>{
-                return  (
-                <div className='w-75'>
-                <Text as={'sup'} className='fw-bold me-2'>{v.user_name_comment}</Text>
-                <Text as={'sup'} className='text-muted'>{v.comment}</Text>
-                </div>
-                )
+              val.comment.map((v,i)=>{
+                if(i<2){
+                  return  (
+                  <div className='w-75'>
+                  <Text as={'sup'} className='fw-bold me-2'>{v.user_name_comment}</Text>
+                  <Text as={'sup'} className='text-muted'>{v.comment}</Text>
+                  </div>
+                  )
+                }
               })
             }
           <div className='mb-2'>
@@ -250,8 +256,8 @@ const removeImg = () => {
           </div>
           <Divider/>
           <div className='d-flex justify-content-between'>
-          <Input size={'sm'} border={'none'} variant={'unstyled'} onChange={(e)=>setAddComment(e.target.value)} name={`comment-${val.idposting}`} value={addComment.comment} placeholder='Tambahkan Komentar anda'></Input>
-          <Button size={'xs'} border={'none'} bgColor={'white'} variant={'unstyled'} textColor={'blue'} value={val.idposting} onClick={submitComment}>Post</Button>
+          <Input size={'sm'} border={'none'} variant={'unstyled'} onChange={(e)=>setAddComment({name: `comment-${val.idposting}`, comment: e.target.value})} name={`comment-${val.idposting}`} value={addComment.name === `comment-${val.idposting}` ? addComment.comment : ''} placeholder='Tambahkan Komentar anda'></Input>
+          <Button size={'xs'} border={'none'} bgColor={'white'} variant={'unstyled'} textColor={'blue'}  value={val.idposting} onClick={submitComment} isDisabled={addComment.comment.length < 1}>Post</Button>
           </div>
           </div>
         </div>

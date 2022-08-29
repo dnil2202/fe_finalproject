@@ -83,8 +83,15 @@ const Register = () => {
             <Box backgroundColor={'whiteAlpha.600'} shadow={'xl'}>
                 <Text textAlign={'center'} color={'blackAlpha.800'} fontSize={50} fontStyle={'unset'} py={5}  onClick={()=>navigate('/')} >GUILD</Text>
                 <Text className='text-secondary' textAlign={'center'} fontSize={'1xl'} mx={10} pb={5} >Sign Up To Explore With Your Community</Text>
-                <Stack spacing={3} className="d-flex align-items-center" >
+                <Stack spacing={3} className="d-flex align-items-center">
                     <Input w={300} placeholder='Email' size='sm' value={input.email} name='email' onChange={onChange} type='email' />
+                </Stack>
+                {
+                    input.email.length >0 &&
+                   !input.email.includes('@') && !input.email.includes ('.co') &&
+                    <Text as={'sup'} textColor={'red.300'} ms={10}>not an e-mail form</Text>
+                }
+                <Stack spacing={3} mt={2} className="d-flex align-items-center" >
                     <Input w={300} placeholder='Full Name' size='sm' value={input.fullname} name='fullname' onChange={onChange} type='text' />
                     <Input w={300} placeholder='Username' size='sm' value={input.username} name='username' onChange={onChange} type='text' />
                 </Stack>

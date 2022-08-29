@@ -11,7 +11,7 @@ import axios from 'axios';
 import { API_URL } from './helper';
 import { loginAction } from './action/useraction';
 import { useDispatch, useSelector } from 'react-redux';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import NotFoundPage from './Pages/NotFoundPage';
 import PostingDetail from './Pages/PostingDetail';
 
@@ -25,7 +25,6 @@ function App() {
       status: userReducer.status
     }
   })
-  
   const keepLogin=()=>{
     let sosmed = localStorage.getItem('sosmed')
     if(sosmed){
@@ -44,6 +43,8 @@ function App() {
       .catch((err)=>{
         console.log(err);
       })
+    }else{
+      console.log('============================> GAGAAL')
     }
   }
 
@@ -55,7 +56,7 @@ function App() {
     <div>
       <Routes>
         {
-          idusers ?
+          localStorage.getItem('sosmed') ?
           <>
           <Route path='/home' element={<Homepage/>}/>
           <Route path='/profil' element={<ProfilPage/>}/>

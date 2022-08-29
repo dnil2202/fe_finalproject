@@ -58,8 +58,6 @@ const PostingDetail = () => {
       username : state.userReducer.username,
     }
   })
-console.log(updateCaption.length)
-
 
  
 useEffect(()=>{
@@ -362,7 +360,7 @@ let addLike
           </div>
           {
             addComment.length >0 &&
-            <Text as={'sup'} className={'text-muted'}>{addComment.length} Character</Text>
+            <Text as={'sup'} className={'text-muted'}>{addComment.length}/ 300 Character</Text>
           }
           </div>
                   </div>
