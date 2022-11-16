@@ -34,8 +34,9 @@ function App() {
         }
       })
       .then((res)=>{
-        if(res.data.idusers){
-          localStorage.getItem('sosmed', res.data.idusers);
+        console.log(res.data)
+        if(res.data.id){
+          localStorage.getItem('sosmed', res.data.id);
           delete res.data.token
           dispatch(loginAction(res.data));
         }

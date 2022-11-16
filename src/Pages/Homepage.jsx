@@ -192,7 +192,6 @@ const removeImg = () => {
 
   const printData=()=>{
     return dataPosting.map((val)=>{
-      console.log(val.comment)
       let addLike
       return(
         <div className='col-lg-12' key={val.idposting}>
@@ -252,7 +251,7 @@ const removeImg = () => {
               })
             }
           <div className='mb-2'>
-            <small className='text-muted'>{val.add_date.split('').splice(0,10).join('')}</small>
+            <small className='text-muted'>{val.createdAt.split('').splice(0,10).join('')}</small>
           </div>
           <Divider/>
           <div className='d-flex justify-content-between'>

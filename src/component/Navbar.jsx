@@ -35,6 +35,7 @@ const Navbar = (props) => {
           
       }
   })
+  console.log(status)
 
     const onLogout = ()=>{
       dispatch(logoutAction())

@@ -23,7 +23,7 @@ const EditProfil = () => {
 
     const{id,fullname,username,bio,email,images} = useSelector((state)=>{
         return{
-            id:state.userReducer.idusers,
+            id:state.userReducer.id,
             fullname:state.userReducer.fullname,
             username:state.userReducer.username,
             email:state.userReducer.email,
@@ -32,8 +32,7 @@ const EditProfil = () => {
         }
     })
 
-    console.log(bio)
-    console.log(newBio.length)
+    console.log(images)
 
 
 
@@ -57,7 +56,8 @@ const EditProfil = () => {
         }
         axios.patch(API_URL+`/auth/all/${id}`,formData)
         .then((res)=>{
-            if(res.data.idusers){
+            console.log(res.data)
+            if(res.data.id){
                 dispatch(UpdateProfile(res.data))
                 toast({
                   title:'Update Data Success',
@@ -67,7 +67,6 @@ const EditProfil = () => {
                 })
               }
         }).catch((err)=>{
-            console.log(err.response.data.message)
             toast({
                 title: err.response.data.message,
                 description: err.message,
@@ -105,7 +104,7 @@ const EditProfil = () => {
                         <div className='  mt-3 w-100' >
                             <div className='d-flex justify-content-center mb-4'>
                                 <Text className='fw-bold' fontSize={'sm'}>Nama</Text>
-                                <Input size={'sm'} ms={12} w={'60'} bg={'gray.200'} defaultValue={fullname} onChange={(e)=>setNewFullName(e.target.value)} />
+                                <Input size={'sm'} ms={12} w={'60'} bg={'gray.200'} defaultValue={fullname}  onChange={(e)=>setNewFullName(e.target.value)} />
                             </div>
                             <div className='d-flex justify-content-center mb-4'>
                                 <Text className='fw-bold' fontSize={'sm'}>User Name</Text>
