@@ -1,2 +1,2 @@
-// export const API_URL = "http://localhost:4000"
-export const API_URL = "http://socmed-jambul.cvbuilder.id"
+export const API_URL = "http://localhost:4000"
+// export const API_URL = "http://socmed-jambul.cvbuilder.id"
