@@ -59,6 +59,7 @@ const Register = () => {
                     }
                     setIsLoading(false)
                 }).catch((err)=>{
+                    console.log(err)
                     setIsLoading(false)
                     toast({
                         title:`${err}`,
